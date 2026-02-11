@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository }}
+  IMAGE_NAME: ghcr.io/kr-uk/itto-backend
 
 jobs:
   build-and-deploy:
@@ -54,5 +54,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ${{ env.IMAGE_NAME }}:latest
-            cd ~/itto_app/backend && docker compose up -d
+            docker pull ghcr.io/kr-uk/itto-backend:latest
+            cd /opt/itto && docker compose up -d app
+
