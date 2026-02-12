@@ -21,5 +21,10 @@ spring:
 firebase:
   service-account-path: ${FIREBASE_SERVICE_ACCOUNT:classpath:firebase-service-account.json}
 
+jwt:
+  secret: ${JWT_SECRET:itto-dev-secret-key-must-be-at-least-256-bits-long-for-hs256}
+  access-token-expiry: ${JWT_ACCESS_EXPIRY:1800000}
+  refresh-token-expiry: ${JWT_REFRESH_EXPIRY:2592000000}
+
 server:
   port: 80
