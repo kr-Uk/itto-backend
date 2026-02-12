@@ -49,4 +49,17 @@ public class UserSetting extends BaseEntity {
     @Column(name = "marketing_notification", nullable = false)
     @Builder.Default
     private Boolean marketingNotification = false;
+
+    public void updateMatching(Gender genderFilter, int ageRangeMin, int ageRangeMax) {
+        this.genderFilter = genderFilter;
+        this.ageRangeMin = ageRangeMin;
+        this.ageRangeMax = ageRangeMax;
+    }
+
+    public void updateNotifications(boolean chat, boolean relationship, boolean stats, boolean marketing) {
+        this.chatNotification = chat;
+        this.relationshipNotification = relationship;
+        this.statsNotification = stats;
+        this.marketingNotification = marketing;
+    }
 }
