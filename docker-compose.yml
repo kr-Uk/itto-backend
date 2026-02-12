@@ -30,7 +30,7 @@ services:
       retries: 5
 
   backend:
-    image: ${BACKEND_IMAGE:-ghcr.io/your-org/itto-app-backend:latest}
+    image: ${BACKEND_IMAGE:-ghcr.io/kr-uk/itto-backend:latest}
     build:
       context: .
     restart: unless-stopped
@@ -42,6 +42,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      FIREBASE_SERVICE_ACCOUNT: file:/secrets/firebase-service-account.json
+    volumes:
+      - ./secrets/firebase-service-account.json:/secrets/firebase-service-account.json:ro
     depends_on:
       postgres:
         condition: service_healthy

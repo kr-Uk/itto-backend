@@ -25,6 +25,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.flywaydb:flyway-core")
 	implementation("com.google.firebase:firebase-admin:9.4.3")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 	runtimeOnly("org.flywaydb:flyway-database-postgresql")
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
