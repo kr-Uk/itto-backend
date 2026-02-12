@@ -48,4 +48,9 @@ public class RestoreRequest extends BaseEntity {
 
     @Column(name = "responded_at")
     private LocalDateTime respondedAt;
+
+    public void respond(RestoreRequestStatus newStatus) {
+        this.status = newStatus;
+        this.respondedAt = LocalDateTime.now();
+    }
 }

@@ -48,4 +48,9 @@ public class InyeonRequest extends BaseEntity {
 
     @Column(name = "responded_at")
     private LocalDateTime respondedAt;
+
+    public void respond(InyeonRequestStatus newStatus) {
+        this.status = newStatus;
+        this.respondedAt = LocalDateTime.now();
+    }
 }

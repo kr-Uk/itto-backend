@@ -48,7 +48,18 @@ public enum ErrorCode {
     // 차단
     ALREADY_BLOCKED(409, "이미 차단한 사용자입니다", "ALREADY_BLOCKED"),
     CANNOT_BLOCK_SELF(400, "자기 자신을 차단할 수 없습니다", "CANNOT_BLOCK_SELF"),
-    BLOCK_NOT_FOUND(404, "차단 정보를 찾을 수 없습니다", "BLOCK_NOT_FOUND");
+    BLOCK_NOT_FOUND(404, "차단 정보를 찾을 수 없습니다", "BLOCK_NOT_FOUND"),
+
+    // 관계
+    NOT_PILYEON(400, "필연 상태가 아닙니다", "NOT_PILYEON"),
+    NOT_UYEON(400, "우연 상태가 아닙니다", "NOT_UYEON"),
+    NOT_PENDING(400, "대기 상태가 아닙니다", "NOT_PENDING"),
+    NOT_PAST(400, "지난인연 상태가 아닙니다", "NOT_PAST"),
+    NOT_INYEON(400, "인연 상태가 아닙니다", "NOT_INYEON"),
+    ALREADY_PENDING(409, "이미 인연 신청 중입니다", "ALREADY_PENDING"),
+    NOT_RELATIONSHIP_MEMBER(403, "해당 관계의 참여자가 아닙니다", "NOT_RELATIONSHIP_MEMBER"),
+    INSUFFICIENT_KNOTS(400, "매듭이 부족합니다", "INSUFFICIENT_KNOTS"),
+    ENCOUNTER_NOT_FOUND(404, "조우 정보를 찾을 수 없습니다", "ENCOUNTER_NOT_FOUND");
 
     private final int status;
     private final String message;
