@@ -1,5 +1,6 @@
 package com.itto.backend.domain.system.controller;
 
+import com.itto.backend.domain.system.dto.AppVersionResponse;
 import com.itto.backend.domain.system.dto.HobbyResponse;
 import com.itto.backend.domain.system.dto.NicknameValidateRequest;
 import com.itto.backend.domain.system.dto.NicknameValidateResponse;
@@ -33,6 +34,14 @@ public class SystemController {
     public ResponseEntity<ApiResponse<NicknameValidateResponse>> validateNickname(
             @Valid @RequestBody NicknameValidateRequest request) {
         NicknameValidateResponse response = systemService.validateNickname(request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @Operation(summary = "앱 버전 조회", description = "플랫폼별 최신 버전 정보를 반환합니다")
+    @GetMapping("/api/system/version")
+    public ResponseEntity<ApiResponse<AppVersionResponse>> getAppVersion(
+            @RequestParam String platform) {
+        AppVersionResponse response = systemService.getAppVersion(platform);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

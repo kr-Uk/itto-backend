@@ -2,11 +2,17 @@ package com.itto.backend.domain.system.service;
 
 import com.itto.backend.domain.hobby.entity.Hobby;
 import com.itto.backend.domain.hobby.repository.HobbyRepository;
+import com.itto.backend.domain.system.dto.AppVersionResponse;
 import com.itto.backend.domain.system.dto.HobbyResponse;
 import com.itto.backend.domain.system.dto.NicknameValidateRequest;
 import com.itto.backend.domain.system.dto.NicknameValidateResponse;
+import com.itto.backend.domain.system.entity.AppVersion;
+import com.itto.backend.domain.system.repository.AppVersionRepository;
 import com.itto.backend.domain.system.repository.ProfanityWordRepository;
 import com.itto.backend.domain.user.repository.UserRepository;
+import com.itto.backend.global.enums.Platform;
+import com.itto.backend.global.exception.BusinessException;
+import com.itto.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +26,21 @@ public class SystemService {
 
     private final HobbyRepository hobbyRepository;
     private final ProfanityWordRepository profanityWordRepository;
+    private final AppVersionRepository appVersionRepository;
     private final UserRepository userRepository;
+
+    public AppVersionResponse getAppVersion(String platform) {
+        Platform p = Platform.valueOf(platform.toUpperCase());
+        AppVersion version = appVersionRepository.findByPlatform(p)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
+
+        return AppVersionResponse.builder()
+                .minVersion(version.getMinVersion())
+                .latestVersion(version.getLatestVersion())
+                .forceUpdate(version.getForceUpdate())
+                .updateUrl(version.getUpdateUrl())
+                .build();
+    }
 
     public List<HobbyResponse> getHobbies() {
         return hobbyRepository.findByIsActiveTrue().stream()

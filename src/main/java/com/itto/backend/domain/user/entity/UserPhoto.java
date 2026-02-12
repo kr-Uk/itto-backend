@@ -35,4 +35,12 @@ public class UserPhoto extends BaseEntity {
     @Column(name = "is_representative", nullable = false)
     @Builder.Default
     private Boolean isRepresentative = false;
+
+    public void updateOrder(int order) {
+        this.displayOrder = order;
+    }
+
+    public void updateRepresentative(boolean representative) {
+        this.isRepresentative = representative;
+    }
 }

@@ -34,4 +34,11 @@ public class FcmToken extends BaseEntity {
 
     @Column(name = "device_id", nullable = false, length = 200)
     private String deviceId;
+
+    /**
+     * Update FCM token
+     */
+    public void updateToken(String token) {
+        this.token = token;
+    }
 }

@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface ExcludedAreaH3IndexRepository extends JpaRepository<ExcludedAreaH3Index, Long> {
 
-    List<ExcludedAreaH3Index> findByExcludedAreaExcludedAreaId(Long excludedAreaId);
+    List<ExcludedAreaH3Index> findByExcludedAreaId(Long excludedAreaId);
 
     List<ExcludedAreaH3Index> findByH3Index(String h3Index);
 
-    void deleteByExcludedAreaExcludedAreaId(Long excludedAreaId);
+    void deleteByExcludedAreaId(Long excludedAreaId);
 }

@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +31,12 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
      */
     @Query("SELECT r FROM Relationship r WHERE (r.user1.userId = :userId OR r.user2.userId = :userId) AND r.status = :status")
     List<Relationship> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") RelationshipStatus status);
+
+    /**
+     * Find by status with pagination
+     */
+    @Query("SELECT r FROM Relationship r WHERE (r.user1.userId = :userId OR r.user2.userId = :userId) AND r.status = :status")
+    Page<Relationship> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") RelationshipStatus status, Pageable pageable);
 
     /**
      * Find expired relationships

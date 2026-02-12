@@ -62,4 +62,27 @@ public class Relationship extends BaseEntity {
 
     @Column(name = "chat_room_id", length = 100)
     private String chatRoomId;
+
+    public void updateStatus(RelationshipStatus newStatus) {
+        this.status = newStatus;
+        this.statusChangedAt = LocalDateTime.now();
+    }
+
+    public void updateStatusWithExpiry(RelationshipStatus newStatus, LocalDateTime expiresAt) {
+        this.status = newStatus;
+        this.statusChangedAt = LocalDateTime.now();
+        this.expiresAt = expiresAt;
+    }
+
+    public void setChatRoomId(String chatRoomId) {
+        this.chatRoomId = chatRoomId;
+    }
+
+    public boolean isParticipant(Long userId) {
+        return user1.getUserId().equals(userId) || user2.getUserId().equals(userId);
+    }
+
+    public User getOtherUser(Long myUserId) {
+        return user1.getUserId().equals(myUserId) ? user2 : user1;
+    }
 }

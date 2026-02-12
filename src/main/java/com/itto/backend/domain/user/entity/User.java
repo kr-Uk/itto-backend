@@ -104,4 +104,12 @@ public class User extends BaseEntity {
     public void updateVerificationStatus(VerificationStatus status) {
         this.verificationStatus = status;
     }
+
+    public void deductKnots(int amount) {
+        this.knots -= amount;
+    }
+
+    public void addKnots(int amount) {
+        this.knots += amount;
+    }
 }

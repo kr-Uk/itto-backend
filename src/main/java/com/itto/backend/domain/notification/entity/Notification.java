@@ -45,4 +45,11 @@ public class Notification extends BaseTimeEntity {
     @Column(name = "is_read", nullable = false)
     @Builder.Default
     private Boolean isRead = false;
+
+    /**
+     * Mark this notification as read
+     */
+    public void markAsRead() {
+        this.isRead = true;
+    }
 }
