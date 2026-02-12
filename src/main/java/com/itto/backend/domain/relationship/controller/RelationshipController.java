@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Relationship", description = "관계 API")
 @RestController
-@RequestMapping("/api/relationships")
+@RequestMapping("/api/v1/relationships")
 @RequiredArgsConstructor
 public class RelationshipController {
 

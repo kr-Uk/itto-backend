@@ -23,14 +23,14 @@ public class SystemController {
     private final SystemService systemService;
 
     @Operation(summary = "취미 목록 조회", description = "활성화된 취미 목록을 반환합니다")
-    @GetMapping("/api/hobbies")
+    @GetMapping("/api/v1/hobbies")
     public ResponseEntity<ApiResponse<List<HobbyResponse>>> getHobbies() {
         List<HobbyResponse> hobbies = systemService.getHobbies();
         return ResponseEntity.ok(ApiResponse.success(hobbies));
     }
 
     @Operation(summary = "닉네임 검증", description = "닉네임 사용 가능 여부를 확인합니다")
-    @PostMapping("/api/nickname/validate")
+    @PostMapping("/api/v1/nickname/validate")
     public ResponseEntity<ApiResponse<NicknameValidateResponse>> validateNickname(
             @Valid @RequestBody NicknameValidateRequest request) {
         NicknameValidateResponse response = systemService.validateNickname(request);
@@ -38,7 +38,7 @@ public class SystemController {
     }
 
     @Operation(summary = "앱 버전 조회", description = "플랫폼별 최신 버전 정보를 반환합니다")
-    @GetMapping("/api/system/version")
+    @GetMapping("/api/v1/system/version")
     public ResponseEntity<ApiResponse<AppVersionResponse>> getAppVersion(
             @RequestParam String platform) {
         AppVersionResponse response = systemService.getAppVersion(platform);

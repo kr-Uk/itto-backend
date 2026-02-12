@@ -40,7 +40,6 @@ public class AuthService {
         String firebaseUid = firebaseToken.getUid();
 
         // 2. 유저 조회 또는 생성
-        boolean isNewUser = false;
         User user = userRepository.findByFirebaseUid(firebaseUid).orElse(null);
 
         if (user == null) {
@@ -51,10 +50,12 @@ public class AuthService {
                     .provider(provider)
                     .build();
             user = userRepository.save(user);
-            isNewUser = true;
         } else if (user.isDeleted()) {
             throw new BusinessException(ErrorCode.USER_ALREADY_WITHDRAWN);
         }
+
+        // 프로필 미완성이면 신규 유저로 판단 (회원가입 중단 후 재로그인 대응)
+        boolean isNewUser = !user.isProfileComplete();
 
         // 3. 최근 로그인 시간 갱신
         user.updateLastLoginAt();

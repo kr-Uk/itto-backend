@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Settings", description = "설정 API")
 @RestController
-@RequestMapping("/api/settings")
+@RequestMapping("/api/v1/settings")
 @RequiredArgsConstructor
 public class SettingsController {
 
