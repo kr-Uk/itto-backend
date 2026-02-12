@@ -43,7 +43,12 @@ public enum ErrorCode {
     // 프로필
     MIN_PHOTO_REQUIRED(400, "사진은 최소 1장 필요합니다", "MIN_PHOTO_REQUIRED"),
     PHOTO_NOT_FOUND(404, "사진을 찾을 수 없습니다", "PHOTO_NOT_FOUND"),
-    RELATIONSHIP_NOT_FOUND(404, "관계를 찾을 수 없습니다", "RELATIONSHIP_NOT_FOUND");
+    RELATIONSHIP_NOT_FOUND(404, "관계를 찾을 수 없습니다", "RELATIONSHIP_NOT_FOUND"),
+
+    // 차단
+    ALREADY_BLOCKED(409, "이미 차단한 사용자입니다", "ALREADY_BLOCKED"),
+    CANNOT_BLOCK_SELF(400, "자기 자신을 차단할 수 없습니다", "CANNOT_BLOCK_SELF"),
+    BLOCK_NOT_FOUND(404, "차단 정보를 찾을 수 없습니다", "BLOCK_NOT_FOUND");
 
     private final int status;
     private final String message;
