@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/shop")
+@RequestMapping("/api/v1/shop")
 @RequiredArgsConstructor
 @Tag(name = "Shop", description = "상점/결제 API")
 public class ShopController {

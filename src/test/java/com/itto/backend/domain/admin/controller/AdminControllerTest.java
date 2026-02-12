@@ -63,7 +63,7 @@ class AdminControllerTest {
         given(adminService.getPendingVerifications(0, 20)).willReturn(response);
 
         // when & then
-        mockMvc.perform(get("/api/admin/verifications")
+        mockMvc.perform(get("/api/v1/admin/verifications")
                         .param("page", "0")
                         .param("size", "20")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -80,7 +80,7 @@ class AdminControllerTest {
     @WithMockUser
     void approveVerification_Success() throws Exception {
         // when & then
-        mockMvc.perform(post("/api/admin/verifications/1/approve")
+        mockMvc.perform(post("/api/v1/admin/verifications/1/approve")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -105,7 +105,7 @@ class AdminControllerTest {
                 """;
 
         // when & then
-        mockMvc.perform(post("/api/admin/verifications/1/reject")
+        mockMvc.perform(post("/api/v1/admin/verifications/1/reject")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
@@ -128,7 +128,7 @@ class AdminControllerTest {
                 """;
 
         // when & then
-        mockMvc.perform(post("/api/admin/verifications/1/reject")
+        mockMvc.perform(post("/api/v1/admin/verifications/1/reject")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))

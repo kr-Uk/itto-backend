@@ -16,7 +16,7 @@ import java.util.List;
 
 @Tag(name = "Signup", description = "회원가입 API")
 @RestController
-@RequestMapping("/api/signup")
+@RequestMapping("/api/v1/signup")
 @RequiredArgsConstructor
 public class SignupController {
 
