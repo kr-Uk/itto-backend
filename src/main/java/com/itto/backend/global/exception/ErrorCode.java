@@ -59,7 +59,11 @@ public enum ErrorCode {
     ALREADY_PENDING(409, "이미 인연 신청 중입니다", "ALREADY_PENDING"),
     NOT_RELATIONSHIP_MEMBER(403, "해당 관계의 참여자가 아닙니다", "NOT_RELATIONSHIP_MEMBER"),
     INSUFFICIENT_KNOTS(400, "매듭이 부족합니다", "INSUFFICIENT_KNOTS"),
-    ENCOUNTER_NOT_FOUND(404, "조우 정보를 찾을 수 없습니다", "ENCOUNTER_NOT_FOUND");
+    ENCOUNTER_NOT_FOUND(404, "조우 정보를 찾을 수 없습니다", "ENCOUNTER_NOT_FOUND"),
+
+    // 위치
+    EXCLUDED_AREA_NOT_FOUND(404, "제외 지역을 찾을 수 없습니다", "EXCLUDED_AREA_NOT_FOUND"),
+    EXCLUDED_AREA_LIMIT(400, "제외 지역은 최대 3개까지 등록할 수 있습니다", "EXCLUDED_AREA_LIMIT");
 
     private final int status;
     private final String message;

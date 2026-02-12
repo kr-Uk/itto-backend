@@ -112,4 +112,12 @@ public class User extends BaseEntity {
     public void addKnots(int amount) {
         this.knots += amount;
     }
+
+    public void updateLocationEnabled(boolean enabled) {
+        this.locationEnabled = enabled;
+    }
+
+    public void updatePremium(boolean isPremium) {
+        this.isPremium = isPremium;
+    }
 }

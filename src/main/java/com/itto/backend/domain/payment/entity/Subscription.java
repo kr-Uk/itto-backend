@@ -63,4 +63,13 @@ public class Subscription extends BaseEntity {
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private Boolean isActive = true;
+
+    /**
+     * Cancel the subscription
+     * Sets cancelledAt to now and deactivates the subscription
+     */
+    public void cancel() {
+        this.cancelledAt = LocalDateTime.now();
+        this.isActive = false;
+    }
 }
