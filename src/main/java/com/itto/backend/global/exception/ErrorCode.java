@@ -38,7 +38,12 @@ public enum ErrorCode {
     PHOTO_MAX(400, "사진은 최대 3장까지 업로드할 수 있습니다", "PHOTO_MAX"),
     PROFILE_INCOMPLETE(400, "프로필 정보를 먼저 입력해주세요", "PROFILE_INCOMPLETE"),
     TERMS_NOT_AGREED(400, "필수 약관에 동의해주세요", "TERMS_NOT_AGREED"),
-    FILE_UPLOAD_FAILED(500, "파일 업로드에 실패했습니다", "FILE_UPLOAD_FAILED");
+    FILE_UPLOAD_FAILED(500, "파일 업로드에 실패했습니다", "FILE_UPLOAD_FAILED"),
+
+    // 프로필
+    MIN_PHOTO_REQUIRED(400, "사진은 최소 1장 필요합니다", "MIN_PHOTO_REQUIRED"),
+    PHOTO_NOT_FOUND(404, "사진을 찾을 수 없습니다", "PHOTO_NOT_FOUND"),
+    RELATIONSHIP_NOT_FOUND(404, "관계를 찾을 수 없습니다", "RELATIONSHIP_NOT_FOUND");
 
     private final int status;
     private final String message;
