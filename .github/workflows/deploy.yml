@@ -53,7 +53,13 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          envs: FIREBASE_SERVICE_ACCOUNT_JSON
           script: |
+            mkdir -p /opt/itto/secrets
+            echo "$FIREBASE_SERVICE_ACCOUNT_JSON" | base64 -d > /opt/itto/secrets/firebase-service-account.json
+            chmod 600 /opt/itto/secrets/firebase-service-account.json
             docker pull ghcr.io/kr-uk/itto-backend:latest
-            cd /opt/itto && docker compose up -d app
+            cd /opt/itto && docker compose up -d backend
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
 

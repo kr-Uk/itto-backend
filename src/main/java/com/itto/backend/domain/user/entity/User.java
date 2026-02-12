@@ -37,14 +37,14 @@ public class User extends BaseEntity {
     @Column(name = "provider", nullable = false, length = 20)
     private Provider provider;
 
-    @Column(name = "nickname", nullable = false, length = 16)
+    @Column(name = "nickname", length = 16)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender", nullable = false, length = 10)
+    @Column(name = "gender", length = 10)
     private Gender gender;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     @Column(name = "introduction", length = 30)
@@ -77,4 +77,20 @@ public class User extends BaseEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    public boolean isProfileComplete() {
+        return this.nickname != null && this.gender != null && this.birthDate != null;
+    }
 }
