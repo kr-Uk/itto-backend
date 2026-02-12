@@ -59,7 +59,7 @@ jobs:
             echo "$FIREBASE_SERVICE_ACCOUNT_JSON" | base64 -d > /opt/itto/secrets/firebase-service-account.json
             chmod 600 /opt/itto/secrets/firebase-service-account.json
             docker pull ghcr.io/kr-uk/itto-backend:latest
-            cd /opt/itto && docker compose up -d backend
+            cd /opt/itto && docker compose up -d app
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
 

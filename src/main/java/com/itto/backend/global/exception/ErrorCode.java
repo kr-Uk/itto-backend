@@ -23,7 +23,22 @@ public enum ErrorCode {
 
     // 유저
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다", "USER_NOT_FOUND"),
-    USER_ALREADY_WITHDRAWN(400, "이미 탈퇴한 사용자입니다", "USER_ALREADY_WITHDRAWN");
+    USER_ALREADY_WITHDRAWN(400, "이미 탈퇴한 사용자입니다", "USER_ALREADY_WITHDRAWN"),
+
+    // 회원가입
+    NICKNAME_TOO_SHORT(400, "닉네임은 2자 이상이어야 합니다", "NICKNAME_TOO_SHORT"),
+    NICKNAME_TOO_LONG(400, "닉네임은 8자 이하여야 합니다", "NICKNAME_TOO_LONG"),
+    NICKNAME_PROFANITY(400, "부적절한 단어가 포함되어 있습니다", "NICKNAME_PROFANITY"),
+    NICKNAME_DUPLICATE(409, "이미 사용 중인 닉네임입니다", "NICKNAME_DUPLICATE"),
+    AGE_RESTRICTION(400, "만 19세 미만은 가입할 수 없습니다", "AGE_RESTRICTION"),
+    HOBBY_MIN(400, "취미는 최소 1개를 선택해야 합니다", "HOBBY_MIN"),
+    HOBBY_MAX(400, "취미는 최대 3개까지 선택할 수 있습니다", "HOBBY_MAX"),
+    HOBBY_NOT_FOUND(404, "존재하지 않는 취미입니다", "HOBBY_NOT_FOUND"),
+    PHOTO_MIN(400, "사진은 최소 1장 필요합니다", "PHOTO_MIN"),
+    PHOTO_MAX(400, "사진은 최대 3장까지 업로드할 수 있습니다", "PHOTO_MAX"),
+    PROFILE_INCOMPLETE(400, "프로필 정보를 먼저 입력해주세요", "PROFILE_INCOMPLETE"),
+    TERMS_NOT_AGREED(400, "필수 약관에 동의해주세요", "TERMS_NOT_AGREED"),
+    FILE_UPLOAD_FAILED(500, "파일 업로드에 실패했습니다", "FILE_UPLOAD_FAILED");
 
     private final int status;
     private final String message;
