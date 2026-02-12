@@ -18,5 +18,8 @@ spring:
       host: ${REDIS_HOST:redis}
       port: ${REDIS_PORT:6379}
 
+firebase:
+  service-account-path: ${FIREBASE_SERVICE_ACCOUNT:classpath:firebase-service-account.json}
+
 server:
   port: 80
