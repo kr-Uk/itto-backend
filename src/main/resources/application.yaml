@@ -20,6 +20,11 @@ spring:
 
 firebase:
   service-account-path: ${FIREBASE_SERVICE_ACCOUNT:classpath:firebase-service-account.json}
+  storage-bucket: ${FIREBASE_STORAGE_BUCKET:itto-app.firebasestorage.app}
+
+spring.servlet.multipart:
+  max-file-size: 10MB
+  max-request-size: 30MB
 
 jwt:
   secret: ${JWT_SECRET:itto-dev-secret-key-must-be-at-least-256-bits-long-for-hs256}

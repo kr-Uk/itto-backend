@@ -93,4 +93,15 @@ public class User extends BaseEntity {
     public boolean isProfileComplete() {
         return this.nickname != null && this.gender != null && this.birthDate != null;
     }
+
+    public void updateProfile(String nickname, Gender gender, LocalDate birthDate, String introduction) {
+        this.nickname = nickname;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.introduction = introduction;
+    }
+
+    public void updateVerificationStatus(VerificationStatus status) {
+        this.verificationStatus = status;
+    }
 }
