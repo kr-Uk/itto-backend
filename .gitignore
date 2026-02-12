@@ -41,5 +41,8 @@ out/
 .env.*
 !.env.example
 
+### Firebase ###
+**/firebase-service-account*.json
+
 ### Nginx SSL certs ###
 nginx/certs/
