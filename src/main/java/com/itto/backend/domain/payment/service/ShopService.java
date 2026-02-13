@@ -33,6 +33,7 @@ public class ShopService {
     private final FirstPurchaseFlagRepository firstPurchaseFlagRepository;
     private final PurchaseRepository purchaseRepository;
     private final KnotTransactionRepository knotTransactionRepository;
+    private final ReceiptValidationService receiptValidationService;
 
     // 패키지 목록 (하드코딩)
     private static final List<PackageData> PACKAGES = List.of(
@@ -118,8 +119,13 @@ public class ShopService {
                 .findFirst()
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND));
 
-        // TODO: 실제 영수증 검증 (App Store / Google Play API 연동)
-        // For now, we assume the receipt is valid
+        // 영수증 검증
+        ReceiptValidationService.ReceiptValidationResult validationResult =
+                receiptValidationService.validatePurchaseReceipt(request.getStore(), request.getReceiptToken());
+
+        if (!validationResult.isValid()) {
+            throw new BusinessException(ErrorCode.INVALID_RECEIPT);
+        }
 
         // 첫 구매 여부 확인
         boolean isFirstPurchase = !firstPurchaseFlagRepository
@@ -139,9 +145,9 @@ public class ShopService {
                 .price(packageData.price)
                 .knotsGranted(knotsGranted)
                 .isFirstPurchase(isFirstPurchase)
-                .store(Store.APPLE) // TODO: 실제 스토어 구분 (request에서 받아야 함)
+                .store(Store.valueOf(request.getStore()))
                 .receiptToken(request.getReceiptToken())
-                .receiptValidated(true) // TODO: 실제 검증 후 true
+                .receiptValidated(validationResult.isValid())
                 .build();
         purchaseRepository.save(purchase);
 
@@ -219,8 +225,13 @@ public class ShopService {
             throw new BusinessException(ErrorCode.CONFLICT);
         }
 
-        // TODO: 실제 영수증 검증 (App Store / Google Play API 연동)
-        // For now, we assume the receipt is valid
+        // 영수증 검증
+        ReceiptValidationService.ReceiptValidationResult validationResult =
+                receiptValidationService.validateSubscriptionReceipt(request.getStore(), request.getReceiptToken());
+
+        if (!validationResult.isValid()) {
+            throw new BusinessException(ErrorCode.INVALID_RECEIPT);
+        }
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expiresAt = now.plusMonths(1);
@@ -228,8 +239,8 @@ public class ShopService {
         // 구독 정보 저장
         Subscription subscription = Subscription.builder()
                 .user(user)
-                .store(Store.APPLE) // TODO: 실제 스토어 구분
-                .storeSubscriptionId(request.getReceiptToken()) // TODO: 실제 구독 ID
+                .store(Store.valueOf(request.getStore()))
+                .storeSubscriptionId(validationResult.getTransactionId()) // 검증된 transactionId 사용
                 .plan(SubscriptionPlan.MONTHLY)
                 .price(6900)
                 .isPromotion(true) // TODO: 실제 프로모션 여부

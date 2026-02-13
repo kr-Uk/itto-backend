@@ -65,6 +65,7 @@ public class RelationshipService {
                             .lastEncounterAt(r.getLastEncounterAt())
                             .expiresAt(r.getExpiresAt())
                             .createdAt(r.getCreatedAt())
+                            .chatRoomId(r.getChatRoomId())
                             .build();
                 }).toList();
 
@@ -136,6 +137,7 @@ public class RelationshipService {
                 .lastEncounterAt(rel.getLastEncounterAt())
                 .expiresAt(rel.getExpiresAt())
                 .createdAt(rel.getCreatedAt())
+                .chatRoomId(rel.getChatRoomId())
                 .build();
     }
 

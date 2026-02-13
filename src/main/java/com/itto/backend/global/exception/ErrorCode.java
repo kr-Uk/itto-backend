@@ -63,7 +63,10 @@ public enum ErrorCode {
 
     // 위치
     EXCLUDED_AREA_NOT_FOUND(404, "제외 지역을 찾을 수 없습니다", "EXCLUDED_AREA_NOT_FOUND"),
-    EXCLUDED_AREA_LIMIT(400, "제외 지역은 최대 3개까지 등록할 수 있습니다", "EXCLUDED_AREA_LIMIT");
+    EXCLUDED_AREA_LIMIT(400, "제외 지역은 최대 3개까지 등록할 수 있습니다", "EXCLUDED_AREA_LIMIT"),
+
+    // 결제
+    INVALID_RECEIPT(400, "유효하지 않은 영수증입니다", "INVALID_RECEIPT");
 
     private final int status;
     private final String message;
