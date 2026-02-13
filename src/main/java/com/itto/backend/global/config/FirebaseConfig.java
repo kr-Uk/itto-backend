@@ -16,11 +16,15 @@ public class FirebaseConfig {
     @Value("${firebase.service-account-path}")
     private Resource serviceAccountResource;
 
+    @Value("${firebase.storage-bucket}")
+    private String storageBucket;
+
     @PostConstruct
     public void init() throws IOException {
         if (FirebaseApp.getApps().isEmpty()) {
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccountResource.getInputStream()))
+                    .setStorageBucket(storageBucket)
                     .build();
 
             FirebaseApp.initializeApp(options);
