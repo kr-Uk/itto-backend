@@ -3,8 +3,23 @@ package com.itto.backend.global.exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
+/**
+ * [에러 코드 모음 - 서비스에서 발생할 수 있는 모든 에러를 한 곳에 정의]
+ *
+ * enum(열거형)이란?
+ * - 미리 정해둔 값들의 목록입니다. 여기서는 "에러의 종류"를 목록으로 관리합니다.
+ * - 예: USER_NOT_FOUND, NICKNAME_DUPLICATE 등
+ *
+ * 각 에러 코드는 3가지 정보를 가집니다:
+ * - status: HTTP 상태 코드 (400=잘못된 요청, 401=인증 필요, 404=못 찾음, 500=서버 오류)
+ * - message: 사용자에게 보여줄 한국어 에러 메시지
+ * - code: 프론트엔드가 에러를 구분하기 위한 영문 코드 (예: "USER_NOT_FOUND")
+ *
+ * 사용 예시: throw new BusinessException(ErrorCode.USER_NOT_FOUND)
+ * → 자동으로 404 상태 코드 + "사용자를 찾을 수 없습니다" 메시지가 응답됨
+ */
+@Getter                  // Lombok: getStatus(), getMessage(), getCode() 메서드를 자동 생성
+@RequiredArgsConstructor // Lombok: (status, message, code)를 받는 생성자를 자동 생성
 public enum ErrorCode {
 
     // 공통
@@ -64,11 +79,12 @@ public enum ErrorCode {
     // 위치
     EXCLUDED_AREA_NOT_FOUND(404, "제외 지역을 찾을 수 없습니다", "EXCLUDED_AREA_NOT_FOUND"),
     EXCLUDED_AREA_LIMIT(400, "제외 지역은 최대 3개까지 등록할 수 있습니다", "EXCLUDED_AREA_LIMIT"),
+    EXCLUDED_CELLS_LIMIT(400, "제외 셀은 최대 20개까지 선택할 수 있습니다", "EXCLUDED_CELLS_LIMIT"),
 
     // 결제
     INVALID_RECEIPT(400, "유효하지 않은 영수증입니다", "INVALID_RECEIPT");
 
-    private final int status;
-    private final String message;
-    private final String code;
+    private final int status;    // HTTP 상태 코드 (예: 400, 401, 404, 500)
+    private final String message; // 사용자에게 보여줄 에러 메시지
+    private final String code;    // 프론트엔드가 에러를 구분하기 위한 영문 코드
 }

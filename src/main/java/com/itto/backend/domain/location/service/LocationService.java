@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.uber.h3core.util.LatLng;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,6 +198,100 @@ public class LocationService {
         excludedAreaRepository.delete(excludedArea);
 
         log.info("User {} deleted excluded area: id={}", userId, excludedAreaId);
+    }
+
+    /**
+     * H3 그리드 조회 - 주어진 좌표 주변의 H3 셀 그리드와 사용자의 기존 선택 셀 반환
+     */
+    public H3GridResponse getH3Grid(Long userId, H3GridRequest request) {
+        getUserOrThrow(userId);
+
+        int k = request.getK() != null ? request.getK() : 4;
+        String centerH3 = h3.latLngToCellAddress(request.getLatitude(), request.getLongitude(), H3_RESOLUTION);
+        List<String> diskIndexes = new ArrayList<>(h3.gridDisk(centerH3, k));
+
+        List<H3CellInfo> cells = diskIndexes.stream()
+                .map(h3Index -> {
+                    LatLng center = h3.cellToLatLng(h3Index);
+                    List<LatLng> boundary = h3.cellToBoundary(h3Index);
+                    List<List<Double>> boundaryList = boundary.stream()
+                            .map(latLng -> List.of(latLng.lat, latLng.lng))
+                            .collect(Collectors.toList());
+
+                    return H3CellInfo.builder()
+                            .h3Index(h3Index)
+                            .center(H3CellInfo.H3Center.builder()
+                                    .latitude(center.lat)
+                                    .longitude(center.lng)
+                                    .build())
+                            .boundary(boundaryList)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // 사용자의 기존 제외 셀 목록 조회
+        List<ExcludedArea> excludedAreas = excludedAreaRepository.findByUserUserId(userId);
+        List<String> selectedIndexes = excludedAreas.stream()
+                .flatMap(area -> excludedAreaH3IndexRepository.findByExcludedAreaId(area.getId()).stream())
+                .map(ExcludedAreaH3Index::getH3Index)
+                .distinct()
+                .collect(Collectors.toList());
+
+        return H3GridResponse.builder()
+                .cells(cells)
+                .selectedIndexes(selectedIndexes)
+                .build();
+    }
+
+    /**
+     * 제외 셀 저장 - 기존 제외 데이터 삭제 후 새로 저장
+     */
+    @Transactional
+    public ExcludedCellsResponse saveExcludedCells(Long userId, ExcludedCellsSaveRequest request) {
+        User user = getUserOrThrow(userId);
+
+        List<String> h3Indexes = request.getH3Indexes() != null ? request.getH3Indexes() : List.of();
+
+        if (h3Indexes.size() > 20) {
+            throw new BusinessException(ErrorCode.EXCLUDED_CELLS_LIMIT);
+        }
+
+        // 기존 제외 지역 + H3 인덱스 전체 삭제
+        List<ExcludedArea> existingAreas = excludedAreaRepository.findByUserUserId(userId);
+        for (ExcludedArea area : existingAreas) {
+            excludedAreaH3IndexRepository.deleteByExcludedAreaId(area.getId());
+        }
+        excludedAreaRepository.deleteAll(existingAreas);
+
+        // 빈 목록이면 전체 해제
+        if (h3Indexes.isEmpty()) {
+            log.info("User {} cleared all excluded cells", userId);
+            return ExcludedCellsResponse.of(List.of());
+        }
+
+        // 첫 번째 셀 중심 좌표로 ExcludedArea 생성
+        LatLng firstCenter = h3.cellToLatLng(h3Indexes.getFirst());
+        ExcludedArea excludedArea = ExcludedArea.builder()
+                .user(user)
+                .name("직접선택")
+                .latitude(firstCenter.lat)
+                .longitude(firstCenter.lng)
+                .radius(0)
+                .build();
+        excludedArea = excludedAreaRepository.save(excludedArea);
+
+        // H3 인덱스 저장
+        ExcludedArea finalExcludedArea = excludedArea;
+        List<ExcludedAreaH3Index> h3IndexEntities = h3Indexes.stream()
+                .map(h3Index -> ExcludedAreaH3Index.builder()
+                        .excludedArea(finalExcludedArea)
+                        .h3Index(h3Index)
+                        .build())
+                .collect(Collectors.toList());
+        excludedAreaH3IndexRepository.saveAll(h3IndexEntities);
+
+        log.info("User {} saved {} excluded cells", userId, h3Indexes.size());
+        return ExcludedCellsResponse.of(h3Indexes);
     }
 
     private User getUserOrThrow(Long userId) {
