@@ -69,4 +69,24 @@ public class LocationController {
         locationService.deleteExcludedArea(userId, excludedAreaId);
         return ResponseEntity.ok(ApiResponse.success("제외 지역이 삭제되었습니다"));
     }
+
+    @Operation(summary = "H3 그리드 조회", description = "주어진 좌표 주변의 H3 셀 그리드를 조회합니다")
+    @PostMapping("/h3/grid")
+    public ResponseEntity<ApiResponse<H3GridResponse>> getH3Grid(
+            Authentication authentication,
+            @Valid @RequestBody H3GridRequest request) {
+        Long userId = (Long) authentication.getPrincipal();
+        H3GridResponse response = locationService.getH3Grid(userId, request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @Operation(summary = "제외 셀 저장", description = "H3 셀 인덱스 목록으로 제외 지역을 저장합니다 (최대 20개)")
+    @PutMapping("/excluded/cells")
+    public ResponseEntity<ApiResponse<ExcludedCellsResponse>> saveExcludedCells(
+            Authentication authentication,
+            @Valid @RequestBody ExcludedCellsSaveRequest request) {
+        Long userId = (Long) authentication.getPrincipal();
+        ExcludedCellsResponse response = locationService.saveExcludedCells(userId, request);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 }
