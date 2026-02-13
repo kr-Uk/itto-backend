@@ -43,6 +43,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       FIREBASE_SERVICE_ACCOUNT: file:/secrets/firebase-service-account.json
+      FIREBASE_STORAGE_BUCKET: itto-27029.firebasestorage.app
     volumes:
       - ./secrets/firebase-service-account.json:/secrets/firebase-service-account.json:ro
     depends_on:

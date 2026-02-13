@@ -20,7 +20,7 @@ spring:
 
 firebase:
   service-account-path: ${FIREBASE_SERVICE_ACCOUNT:classpath:firebase-service-account.json}
-  storage-bucket: ${FIREBASE_STORAGE_BUCKET:itto-app.firebasestorage.app}
+  storage-bucket: ${FIREBASE_STORAGE_BUCKET:itto-27029.firebasestorage.app}
 
 spring.servlet.multipart:
   max-file-size: 10MB
