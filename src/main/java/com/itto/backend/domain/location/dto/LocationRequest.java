@@ -1,6 +1,5 @@
 package com.itto.backend.domain.location.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
 @Builder
 public class LocationRequest {
 
-    @NotBlank(message = "H3 인덱스는 필수입니다")
     private String h3Index;
 
     @NotNull(message = "위도는 필수입니다")
