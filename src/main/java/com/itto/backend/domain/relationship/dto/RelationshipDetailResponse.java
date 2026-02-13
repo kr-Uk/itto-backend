@@ -20,6 +20,7 @@ public class RelationshipDetailResponse {
     private LocalDateTime lastEncounterAt;
     private LocalDateTime expiresAt;
     private LocalDateTime createdAt;
+    private String chatRoomId;
 
     @Getter
     @Builder
