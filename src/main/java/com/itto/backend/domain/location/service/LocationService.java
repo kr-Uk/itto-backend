@@ -11,12 +11,14 @@ import com.itto.backend.global.exception.BusinessException;
 import com.itto.backend.global.exception.ErrorCode;
 import com.uber.h3core.H3Core;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.uber.h3core.util.LatLng;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,19 +28,25 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LocationService {
 
-    private static final int H3_RESOLUTION = 9; // ~100m hex edge, ~105,332 m² area
+    public static final int H3_RESOLUTION = 9; // ~100m hex edge, ~105,332 m² area
+    private static final String LOCATION_USER_PREFIX = "location:user:";
+    private static final String LOCATION_H3_PREFIX = "location:h3:";
+    private static final Duration LOCATION_TTL = Duration.ofMinutes(10);
 
     private final UserRepository userRepository;
     private final ExcludedAreaRepository excludedAreaRepository;
     private final ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository;
+    private final StringRedisTemplate redisTemplate;
     private final H3Core h3;
 
     public LocationService(UserRepository userRepository,
                           ExcludedAreaRepository excludedAreaRepository,
-                          ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository) {
+                          ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository,
+                          StringRedisTemplate redisTemplate) {
         this.userRepository = userRepository;
         this.excludedAreaRepository = excludedAreaRepository;
         this.excludedAreaH3IndexRepository = excludedAreaH3IndexRepository;
+        this.redisTemplate = redisTemplate;
         try {
             this.h3 = H3Core.newInstance();
         } catch (IOException e) {
@@ -65,7 +73,46 @@ public class LocationService {
                 userId, request.getH3Index(), serverH3Index, request.getLatitude(),
                 request.getLongitude(), request.getAccuracy(), request.getTimestamp());
 
-        // TODO: 추후 실시간 매칭 로직에서 활용 (제외 지역 H3 인덱스와 비교)
+        // Redis에 위치 데이터 저장 (배치 스침 판정에서 활용)
+        saveLocationToRedis(userId, serverH3Index, request.getLatitude(), request.getLongitude());
+    }
+
+    /**
+     * Redis에 사용자 위치 저장
+     * - location:user:{userId} → Hash {h3Index, lat, lng}
+     * - location:h3:{h3Index} → Set<userId>
+     */
+    private void saveLocationToRedis(Long userId, String h3Index, double lat, double lng) {
+        String userKey = LOCATION_USER_PREFIX + userId;
+        String h3Key = LOCATION_H3_PREFIX + h3Index;
+
+        // 이전 H3 셀에서 제거 (셀이 바뀐 경우)
+        String prevH3 = (String) redisTemplate.opsForHash().get(userKey, "h3Index");
+        if (prevH3 != null && !prevH3.equals(h3Index)) {
+            redisTemplate.opsForSet().remove(LOCATION_H3_PREFIX + prevH3, userId.toString());
+        }
+
+        // 사용자 위치 Hash 저장
+        redisTemplate.opsForHash().put(userKey, "h3Index", h3Index);
+        redisTemplate.opsForHash().put(userKey, "lat", String.valueOf(lat));
+        redisTemplate.opsForHash().put(userKey, "lng", String.valueOf(lng));
+        redisTemplate.expire(userKey, LOCATION_TTL);
+
+        // H3 셀별 사용자 Set에 추가
+        redisTemplate.opsForSet().add(h3Key, userId.toString());
+        redisTemplate.expire(h3Key, LOCATION_TTL);
+    }
+
+    /**
+     * Redis에서 사용자 위치 삭제 (위치 추적 OFF 시)
+     */
+    public void removeLocationFromRedis(Long userId) {
+        String userKey = LOCATION_USER_PREFIX + userId;
+        String prevH3 = (String) redisTemplate.opsForHash().get(userKey, "h3Index");
+        if (prevH3 != null) {
+            redisTemplate.opsForSet().remove(LOCATION_H3_PREFIX + prevH3, userId.toString());
+        }
+        redisTemplate.delete(userKey);
     }
 
     /**
@@ -76,6 +123,11 @@ public class LocationService {
         User user = getUserOrThrow(userId);
 
         user.updateLocationEnabled(request.getEnabled());
+
+        // 위치 추적 OFF 시 Redis에서 위치 삭제
+        if (!request.getEnabled()) {
+            removeLocationFromRedis(userId);
+        }
 
         log.info("User {} toggled location enabled to: {}", userId, request.getEnabled());
 
