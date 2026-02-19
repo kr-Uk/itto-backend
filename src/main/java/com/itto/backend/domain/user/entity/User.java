@@ -106,6 +106,9 @@ public class User extends BaseEntity {
     }
 
     public void deductKnots(int amount) {
+        if (this.knots < amount) {
+            throw new IllegalStateException("매듭 잔액 부족: 보유=" + this.knots + ", 필요=" + amount);
+        }
         this.knots -= amount;
     }
 

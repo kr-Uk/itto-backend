@@ -31,6 +31,10 @@ jwt:
   access-token-expiry: ${JWT_ACCESS_EXPIRY:1800000}
   refresh-token-expiry: ${JWT_REFRESH_EXPIRY:2592000000}
 
+itto:
+  payment:
+    skip-receipt-validation: ${SKIP_RECEIPT_VALIDATION:true}
+
 server:
   port: 80
 

@@ -44,4 +44,16 @@ public class MonthlyUsage extends BaseEntity {
     @Column(name = "free_restores_used", nullable = false)
     @Builder.Default
     private Integer freeRestoresUsed = 0;
+
+    public void incrementFreeConvertsUsed() {
+        this.freeConvertsUsed++;
+    }
+
+    public void incrementFreeRequestsUsed() {
+        this.freeRequestsUsed++;
+    }
+
+    public void incrementFreeRestoresUsed() {
+        this.freeRestoresUsed++;
+    }
 }
