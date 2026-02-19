@@ -3,8 +3,7 @@ package com.itto.backend.domain.relationship.service;
 import com.itto.backend.domain.block.repository.BlockRepository;
 import com.itto.backend.domain.location.repository.ExcludedAreaH3IndexRepository;
 import com.itto.backend.domain.location.service.LocationService;
-import com.itto.backend.domain.notification.entity.Notification;
-import com.itto.backend.domain.notification.repository.NotificationRepository;
+import com.itto.backend.domain.notification.service.NotificationService;
 import com.itto.backend.domain.relationship.entity.Encounter;
 import com.itto.backend.domain.relationship.entity.Relationship;
 import com.itto.backend.domain.relationship.entity.RelationshipLog;
@@ -51,7 +50,7 @@ public class EncounterBatchService {
     private final RelationshipLogRepository relationshipLogRepository;
     private final BlockRepository blockRepository;
     private final ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository;
-    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
     private final H3Core h3;
 
     public EncounterBatchService(StringRedisTemplate redisTemplate,
@@ -62,7 +61,7 @@ public class EncounterBatchService {
                                  RelationshipLogRepository relationshipLogRepository,
                                  BlockRepository blockRepository,
                                  ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository,
-                                 NotificationRepository notificationRepository) {
+                                 NotificationService notificationService) {
         this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.userSettingRepository = userSettingRepository;
@@ -71,7 +70,7 @@ public class EncounterBatchService {
         this.relationshipLogRepository = relationshipLogRepository;
         this.blockRepository = blockRepository;
         this.excludedAreaH3IndexRepository = excludedAreaH3IndexRepository;
-        this.notificationRepository = notificationRepository;
+        this.notificationService = notificationService;
         try {
             this.h3 = H3Core.newInstance();
         } catch (IOException e) {
@@ -498,13 +497,12 @@ public class EncounterBatchService {
 
     private void createEncounterNotification(User user, Long relationshipId,
                                               NotificationType type, String title, String message) {
-        notificationRepository.save(Notification.builder()
-                .user(user)
-                .type(type)
-                .title(title)
-                .message(message)
-                .deepLink("/relationship/" + relationshipId)
-                .build());
+        try {
+            notificationService.createAndPush(user.getUserId(), type, title, message,
+                    "/relationship/" + relationshipId);
+        } catch (Exception e) {
+            log.warn("스침 알림 발송 실패: userId={}, type={}", user.getUserId(), type, e);
+        }
     }
 
     private void saveLog(Relationship rel, RelationshipStatus from, RelationshipStatus to,
