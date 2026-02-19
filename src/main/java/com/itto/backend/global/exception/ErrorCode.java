@@ -82,7 +82,8 @@ public enum ErrorCode {
     EXCLUDED_CELLS_LIMIT(400, "제외 셀은 최대 20개까지 선택할 수 있습니다", "EXCLUDED_CELLS_LIMIT"),
 
     // 결제
-    INVALID_RECEIPT(400, "유효하지 않은 영수증입니다", "INVALID_RECEIPT");
+    INVALID_RECEIPT(400, "유효하지 않은 영수증입니다", "INVALID_RECEIPT"),
+    FREE_USAGE_EXHAUSTED(400, "이번 달 무료 횟수를 모두 사용했습니다", "FREE_USAGE_EXHAUSTED");
 
     private final int status;    // HTTP 상태 코드 (예: 400, 401, 404, 500)
     private final String message; // 사용자에게 보여줄 에러 메시지

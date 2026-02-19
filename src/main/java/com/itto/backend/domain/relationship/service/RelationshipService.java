@@ -1,5 +1,7 @@
 package com.itto.backend.domain.relationship.service;
 
+import com.itto.backend.domain.payment.entity.MonthlyUsage;
+import com.itto.backend.domain.payment.repository.MonthlyUsageRepository;
 import com.itto.backend.domain.relationship.dto.*;
 import com.itto.backend.domain.relationship.entity.*;
 import com.itto.backend.domain.relationship.repository.*;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,11 +33,17 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class RelationshipService {
 
+    private static final int FREE_REQUESTS_PER_MONTH = 3;
+    private static final int FREE_CONVERTS_PER_MONTH = 1;
+    private static final int PREMIUM_CONVERTS_PER_MONTH = 6;
+    private static final int KNOTS_COST = 30;
+
     private final RelationshipRepository relationshipRepository;
     private final InyeonRequestRepository inyeonRequestRepository;
     private final RestoreRequestRepository restoreRequestRepository;
     private final EncounterRepository encounterRepository;
     private final RelationshipLogRepository relationshipLogRepository;
+    private final MonthlyUsageRepository monthlyUsageRepository;
     private final UserRepository userRepository;
     private final UserPhotoRepository userPhotoRepository;
     private final UserHobbyRepository userHobbyRepository;
@@ -158,13 +167,34 @@ public class RelationshipService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
         User receiver = rel.getOtherUser(userId);
 
-        // 인연 신청 생성 (무료 횟수는 추후 결제 도메인에서 관리, 현재는 0 knots)
+        // 무료 횟수 확인 및 매듭 차감
+        MonthlyUsage usage = getOrCreateMonthlyUsage(requester);
+        int freeLimit = requester.getIsPremium() ? Integer.MAX_VALUE : FREE_REQUESTS_PER_MONTH;
+        int knotsUsed = 0;
+
+        if (usage.getFreeRequestsUsed() < freeLimit) {
+            // 무료 횟수 사용
+            usage.incrementFreeRequestsUsed();
+        } else {
+            // 매듭 차감
+            if (requester.getKnots() < KNOTS_COST) {
+                throw new BusinessException(ErrorCode.INSUFFICIENT_KNOTS);
+            }
+            requester.deductKnots(KNOTS_COST);
+            knotsUsed = KNOTS_COST;
+        }
+
+        int freeRemaining = requester.getIsPremium()
+                ? Integer.MAX_VALUE
+                : Math.max(0, freeLimit - usage.getFreeRequestsUsed());
+
+        // 인연 신청 생성
         InyeonRequest request = InyeonRequest.builder()
                 .relationship(rel)
                 .requester(requester)
                 .receiver(receiver)
                 .status(InyeonRequestStatus.PENDING)
-                .knotsUsed(0)
+                .knotsUsed(knotsUsed)
                 .build();
         inyeonRequestRepository.save(request);
 
@@ -177,7 +207,7 @@ public class RelationshipService {
         return InyeonRequestResponse.builder()
                 .status("PENDING")
                 .message("인연 신청을 보냈습니다")
-                .remainingFreeRequests(0) // 추후 결제 도메인에서 계산
+                .remainingFreeRequests(freeRemaining)
                 .build();
     }
 
@@ -405,15 +435,25 @@ public class RelationshipService {
             throw new BusinessException(ErrorCode.NOT_UYEON);
         }
 
-        int convertCost = 30;
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        if (user.getKnots() < convertCost) {
-            throw new BusinessException(ErrorCode.INSUFFICIENT_KNOTS);
-        }
+        // 무료 전환 횟수 확인 및 매듭 차감
+        MonthlyUsage usage = getOrCreateMonthlyUsage(user);
+        int freeLimit = user.getIsPremium() ? PREMIUM_CONVERTS_PER_MONTH : FREE_CONVERTS_PER_MONTH;
+        int knotsUsed = 0;
 
-        user.deductKnots(convertCost);
+        if (usage.getFreeConvertsUsed() < freeLimit) {
+            // 무료 횟수 사용
+            usage.incrementFreeConvertsUsed();
+        } else {
+            // 매듭 차감
+            if (user.getKnots() < KNOTS_COST) {
+                throw new BusinessException(ErrorCode.INSUFFICIENT_KNOTS);
+            }
+            user.deductKnots(KNOTS_COST);
+            knotsUsed = KNOTS_COST;
+        }
 
         LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
         rel.updateStatusWithExpiry(RelationshipStatus.PILYEON, expiresAt);
@@ -423,13 +463,24 @@ public class RelationshipService {
         return ConvertResponse.builder()
                 .status("PILYEON")
                 .message("필연으로 전환되었습니다")
-                .knotsUsed(convertCost)
+                .knotsUsed(knotsUsed)
                 .remainingKnots(user.getKnots())
                 .expiresAt(expiresAt)
                 .build();
     }
 
     // --- Helper Methods ---
+
+    private MonthlyUsage getOrCreateMonthlyUsage(User user) {
+        String yearMonth = YearMonth.now().toString();
+        return monthlyUsageRepository.findByUserUserIdAndYearMonth(user.getUserId(), yearMonth)
+                .orElseGet(() -> monthlyUsageRepository.save(
+                        MonthlyUsage.builder()
+                                .user(user)
+                                .yearMonth(yearMonth)
+                                .build()
+                ));
+    }
 
     private Relationship getRelationshipAndValidate(Long relationshipId, Long userId) {
         Relationship rel = relationshipRepository.findById(relationshipId)

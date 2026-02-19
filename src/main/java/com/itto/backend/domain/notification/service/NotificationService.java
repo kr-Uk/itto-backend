@@ -10,6 +10,7 @@ import com.itto.backend.domain.user.entity.FcmToken;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.FcmTokenRepository;
 import com.itto.backend.domain.user.repository.UserRepository;
+import com.itto.backend.global.enums.NotificationType;
 import com.itto.backend.global.exception.BusinessException;
 import com.itto.backend.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -106,5 +107,69 @@ public class NotificationService {
             log.info("Registered new FCM token for user: userId={}, deviceId={}",
                     userId, request.getDeviceId());
         }
+    }
+
+    /**
+     * 앱 내 알림 저장 + FCM 푸시 발송
+     */
+    @Transactional
+    public void createAndPush(Long recipientUserId, NotificationType type,
+                              String title, String message, String deepLink) {
+        User user = userRepository.findById(recipientUserId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        // 1. DB에 알림 저장
+        Notification notification = Notification.builder()
+                .user(user)
+                .type(type)
+                .title(title)
+                .message(message)
+                .deepLink(deepLink)
+                .build();
+        notificationRepository.save(notification);
+
+        // 2. FCM 푸시 발송
+        sendFcmPush(recipientUserId, title, message, type.name(), deepLink);
+    }
+
+    /**
+     * FCM 푸시 발송 (실패해도 예외를 던지지 않음)
+     */
+    private void sendFcmPush(Long userId, String title, String body,
+                             String notificationType, String deepLink) {
+        List<FcmToken> tokens = fcmTokenRepository.findByUserUserId(userId);
+        if (tokens.isEmpty()) {
+            log.debug("FCM 토큰 없음: userId={}", userId);
+            return;
+        }
+
+        for (FcmToken fcmToken : tokens) {
+            try {
+                com.google.firebase.messaging.Message message = com.google.firebase.messaging.Message.builder()
+                        .setToken(fcmToken.getToken())
+                        .setNotification(com.google.firebase.messaging.Notification.builder()
+                                .setTitle(title)
+                                .setBody(body)
+                                .build())
+                        .putData("type", notificationType)
+                        .putData("deepLink", deepLink != null ? deepLink : "")
+                        .build();
+
+                String messageId = com.google.firebase.messaging.FirebaseMessaging.getInstance().send(message);
+                log.info("FCM 발송 성공: userId={}, deviceId={}, messageId={}", userId, fcmToken.getDeviceId(), messageId);
+            } catch (com.google.firebase.messaging.FirebaseMessagingException e) {
+                log.warn("FCM 발송 실패: userId={}, deviceId={}, error={}", userId, fcmToken.getDeviceId(), e.getMessage());
+                // 유효하지 않은 토큰 삭제
+                if (isInvalidTokenError(e)) {
+                    fcmTokenRepository.delete(fcmToken);
+                    log.info("유효하지 않은 FCM 토큰 삭제: userId={}, deviceId={}", userId, fcmToken.getDeviceId());
+                }
+            }
+        }
+    }
+
+    private boolean isInvalidTokenError(com.google.firebase.messaging.FirebaseMessagingException e) {
+        String code = e.getMessagingErrorCode() != null ? e.getMessagingErrorCode().name() : "";
+        return "UNREGISTERED".equals(code) || "INVALID_ARGUMENT".equals(code);
     }
 }

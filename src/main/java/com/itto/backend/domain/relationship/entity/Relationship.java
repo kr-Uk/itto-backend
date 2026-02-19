@@ -63,6 +63,14 @@ public class Relationship extends BaseEntity {
     @Column(name = "chat_room_id", length = 100)
     private String chatRoomId;
 
+    public void recordEncounter() {
+        this.encounterCount++;
+        this.lastEncounterAt = LocalDateTime.now();
+        if (this.firstEncounterAt == null) {
+            this.firstEncounterAt = this.lastEncounterAt;
+        }
+    }
+
     public void updateStatus(RelationshipStatus newStatus) {
         this.status = newStatus;
         this.statusChangedAt = LocalDateTime.now();
