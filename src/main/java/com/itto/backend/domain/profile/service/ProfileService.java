@@ -85,6 +85,9 @@ public class ProfileService {
         User user = findUser(userId);
 
         // 닉네임 변경
+        if (request.getNickname() != null && userRepository.existsByNicknameAndUserIdNot(request.getNickname(), userId)) {
+            throw new BusinessException(ErrorCode.NICKNAME_DUPLICATE);
+        }
         if (request.getNickname() != null) {
             user.updateProfile(
                     request.getNickname(),

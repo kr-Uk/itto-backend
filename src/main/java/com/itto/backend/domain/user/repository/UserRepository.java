@@ -18,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByNickname(String nickname);
 
+    boolean existsByNicknameAndUserIdNot(String nickname, Long userId);
+
     Optional<User> findByFirebaseUidAndDeletedAtIsNull(String firebaseUid);
 
     Page<User> findByVerificationStatus(VerificationStatus status, Pageable pageable);

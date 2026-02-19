@@ -62,6 +62,11 @@ public class SignupService {
     public void saveProfile(Long userId, ProfileRequest request) {
         User user = findUser(userId);
 
+        // 닉네임 중복 체크 (본인 제외)
+        if (userRepository.existsByNicknameAndUserIdNot(request.getNickname(), userId)) {
+            throw new BusinessException(ErrorCode.NICKNAME_DUPLICATE);
+        }
+
         // 나이 제한 체크 (만 19세 이상)
         if (Period.between(request.getBirthDate(), LocalDate.now()).getYears() < 19) {
             throw new BusinessException(ErrorCode.AGE_RESTRICTION);
