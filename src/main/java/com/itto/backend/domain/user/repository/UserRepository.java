@@ -23,4 +23,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByFirebaseUidAndDeletedAtIsNull(String firebaseUid);
 
     Page<User> findByVerificationStatus(VerificationStatus status, Pageable pageable);
+
+    boolean existsByCiAndDeletedAtIsNull(String ci);
+
+    boolean existsByDiAndDeletedAtIsNull(String di);
 }

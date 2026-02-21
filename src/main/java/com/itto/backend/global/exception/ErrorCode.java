@@ -83,7 +83,14 @@ public enum ErrorCode {
 
     // 결제
     INVALID_RECEIPT(400, "유효하지 않은 영수증입니다", "INVALID_RECEIPT"),
-    FREE_USAGE_EXHAUSTED(400, "이번 달 무료 횟수를 모두 사용했습니다", "FREE_USAGE_EXHAUSTED");
+    FREE_USAGE_EXHAUSTED(400, "이번 달 무료 횟수를 모두 사용했습니다", "FREE_USAGE_EXHAUSTED"),
+
+    // 본인인증
+    IDENTITY_ALREADY_VERIFIED(400, "이미 본인인증이 완료되었습니다", "IDENTITY_ALREADY_VERIFIED"),
+    IDENTITY_NOT_FOUND(404, "본인인증 요청을 찾을 수 없습니다", "IDENTITY_NOT_FOUND"),
+    IDENTITY_DUPLICATE_CI(409, "이미 가입된 본인인증 정보입니다", "IDENTITY_DUPLICATE_CI"),
+    IDENTITY_VERIFICATION_FAILED(400, "본인인증에 실패했습니다", "IDENTITY_VERIFICATION_FAILED"),
+    IDENTITY_CRYPTO_ERROR(500, "본인인증 암호화 처리 중 오류가 발생했습니다", "IDENTITY_CRYPTO_ERROR");
 
     private final int status;    // HTTP 상태 코드 (예: 400, 401, 404, 500)
     private final String message; // 사용자에게 보여줄 에러 메시지

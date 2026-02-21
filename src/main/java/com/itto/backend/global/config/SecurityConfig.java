@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 "/api/v1/system/version",
                                 "/api/v1/hobbies",
                                 "/api/v1/nickname/validate",
+                                "/api/v1/identity/callback/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"

@@ -75,6 +75,19 @@ public class User extends BaseEntity {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "ci", length = 256)
+    private String ci;
+
+    @Column(name = "di", length = 256)
+    private String di;
+
+    @Column(name = "identity_verified", nullable = false)
+    @Builder.Default
+    private Boolean identityVerified = false;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -122,5 +135,12 @@ public class User extends BaseEntity {
 
     public void updatePremium(boolean isPremium) {
         this.isPremium = isPremium;
+    }
+
+    public void updateIdentityVerification(String phoneNumber, String ci, String di) {
+        this.phoneNumber = phoneNumber;
+        this.ci = ci;
+        this.di = di;
+        this.identityVerified = true;
     }
 }
