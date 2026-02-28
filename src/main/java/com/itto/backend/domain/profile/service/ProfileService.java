@@ -17,7 +17,7 @@ import com.itto.backend.global.enums.RelationshipStatus;
 import com.itto.backend.global.enums.VerificationStatus;
 import com.itto.backend.global.exception.BusinessException;
 import com.itto.backend.global.exception.ErrorCode;
-import com.itto.backend.global.service.FirebaseStorageService;
+import com.itto.backend.global.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class ProfileService {
     private final HobbyRepository hobbyRepository;
     private final VerificationRepository verificationRepository;
     private final RelationshipRepository relationshipRepository;
-    private final FirebaseStorageService storageService;
+    private final StorageService storageService;
 
     @Transactional(readOnly = true)
     public MyProfileResponse getMyProfile(Long userId) {

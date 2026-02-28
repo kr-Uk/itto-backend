@@ -34,7 +34,8 @@ public enum ErrorCode {
     INVALID_TOKEN(401, "유효하지 않은 토큰입니다", "INVALID_TOKEN"),
     EXPIRED_TOKEN(401, "만료된 토큰입니다", "EXPIRED_TOKEN"),
     INVALID_REFRESH_TOKEN(401, "유효하지 않은 리프레시 토큰입니다", "INVALID_REFRESH_TOKEN"),
-    FIREBASE_AUTH_FAILED(401, "Firebase 인증에 실패했습니다", "FIREBASE_AUTH_FAILED"),
+    OAUTH_VERIFICATION_FAILED(401, "OAuth 인증에 실패했습니다", "OAUTH_VERIFICATION_FAILED"),
+    UNSUPPORTED_PROVIDER(400, "지원하지 않는 소셜 로그인 제공자입니다", "UNSUPPORTED_PROVIDER"),
 
     // 유저
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다", "USER_NOT_FOUND"),

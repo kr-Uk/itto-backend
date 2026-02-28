@@ -1,9 +1,8 @@
 package com.itto.backend.domain.auth.service;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.FirebaseToken;
 import com.itto.backend.domain.auth.dto.*;
+import com.itto.backend.domain.auth.service.oauth.OAuthUserInfo;
+import com.itto.backend.domain.auth.service.oauth.OAuthVerifierFactory;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.FcmTokenRepository;
 import com.itto.backend.domain.user.repository.UserRepository;
@@ -32,21 +31,25 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final JwtProperties jwtProperties;
     private final StringRedisTemplate redisTemplate;
+    private final OAuthVerifierFactory oAuthVerifierFactory;
 
     @Transactional
     public LoginResponse login(LoginRequest request) {
-        // 1. Firebase 토큰 검증
-        FirebaseToken firebaseToken = verifyFirebaseToken(request.getFirebaseIdToken());
-        String firebaseUid = firebaseToken.getUid();
+        // 1. OAuth 토큰 직접 검증
+        OAuthUserInfo oAuthUserInfo = oAuthVerifierFactory
+                .getVerifier(request.getProvider())
+                .verify(request.getOauthToken());
+
+        String providerUid = oAuthUserInfo.providerUid();
+        Provider provider = Provider.valueOf(request.getProvider().toUpperCase());
 
         // 2. 유저 조회 또는 생성
-        User user = userRepository.findByFirebaseUid(firebaseUid).orElse(null);
+        User user = userRepository.findByProviderAndProviderUid(provider, providerUid).orElse(null);
 
         if (user == null) {
             // 신규 유저 생성
-            Provider provider = Provider.valueOf(request.getProvider().toUpperCase());
             user = User.builder()
-                    .firebaseUid(firebaseUid)
+                    .providerUid(providerUid)
                     .provider(provider)
                     .build();
             user = userRepository.save(user);
@@ -139,15 +142,6 @@ public class AuthService {
         fcmTokenRepository.deleteByUserUserId(userId);
 
         log.info("회원탈퇴 처리 완료: userId={}, reason={}", userId, request.getReason());
-    }
-
-    private FirebaseToken verifyFirebaseToken(String idToken) {
-        try {
-            return FirebaseAuth.getInstance().verifyIdToken(idToken);
-        } catch (FirebaseAuthException e) {
-            log.warn("Firebase 토큰 검증 실패: {}", e.getMessage());
-            throw new BusinessException(ErrorCode.FIREBASE_AUTH_FAILED);
-        }
     }
 
     private void saveRefreshToken(Long userId, String refreshToken) {

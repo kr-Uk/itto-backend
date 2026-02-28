@@ -50,7 +50,7 @@ class AdminServiceTest {
         // given
         User user1 = User.builder()
                 .userId(1L)
-                .firebaseUid("firebase1")
+                .providerUid("firebase1")
                 .provider(Provider.KAKAO)
                 .nickname("유저1")
                 .gender(Gender.MALE)
@@ -60,7 +60,7 @@ class AdminServiceTest {
 
         User user2 = User.builder()
                 .userId(2L)
-                .firebaseUid("firebase2")
+                .providerUid("firebase2")
                 .provider(Provider.KAKAO)
                 .nickname("유저2")
                 .gender(Gender.FEMALE)
@@ -117,7 +117,7 @@ class AdminServiceTest {
         // given
         User user = User.builder()
                 .userId(1L)
-                .firebaseUid("firebase1")
+                .providerUid("firebase1")
                 .provider(Provider.KAKAO)
                 .nickname("유저1")
                 .verificationStatus(VerificationStatus.PENDING)
@@ -150,7 +150,7 @@ class AdminServiceTest {
         // given
         User user = User.builder()
                 .userId(1L)
-                .firebaseUid("firebase1")
+                .providerUid("firebase1")
                 .provider(Provider.KAKAO)
                 .nickname("유저1")
                 .verificationStatus(VerificationStatus.PENDING)

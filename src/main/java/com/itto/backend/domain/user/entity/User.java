@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(
     name = "users",
     indexes = {
-        @Index(name = "idx_users_firebase_uid", columnList = "firebase_uid"),
+        @Index(name = "idx_users_provider_uid", columnList = "provider_uid"),
         @Index(name = "idx_users_deleted_at", columnList = "deleted_at")
     }
 )
@@ -30,8 +30,8 @@ public class User extends BaseEntity {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "firebase_uid", nullable = false, unique = true, length = 128)
-    private String firebaseUid;
+    @Column(name = "provider_uid", nullable = false, length = 128)
+    private String providerUid;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false, length = 20)

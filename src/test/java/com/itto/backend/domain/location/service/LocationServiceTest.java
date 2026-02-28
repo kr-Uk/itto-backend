@@ -53,7 +53,7 @@ class LocationServiceTest {
     void setUp() {
         testUser = User.builder()
                 .userId(1L)
-                .firebaseUid("test-firebase-uid")
+                .providerUid("test-provider-uid")
                 .provider(Provider.KAKAO)
                 .nickname("testuser")
                 .verificationStatus(VerificationStatus.APPROVED)
