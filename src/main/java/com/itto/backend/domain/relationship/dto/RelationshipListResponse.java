@@ -30,6 +30,7 @@ public class RelationshipListResponse {
         private LocalDateTime expiresAt;
         private LocalDateTime createdAt;
         private String chatRoomId;
+        private boolean destinyBadge;
     }
 
     @Getter

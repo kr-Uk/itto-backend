@@ -184,10 +184,9 @@ public class EncounterBatchService {
         if (existingOpt.isPresent()) {
             Relationship existing = existingOpt.get();
             RelationshipStatus status = existing.getStatus();
-            // 이미 인연/대기/필연 상태면 추가 스침 불필요
+            // 이미 인연/대기 상태면 추가 스침 불필요 (PILYEON은 3번째 스침 처리를 위해 통과)
             if (status == RelationshipStatus.INYEON
-                    || status == RelationshipStatus.PENDING
-                    || status == RelationshipStatus.PILYEON) {
+                    || status == RelationshipStatus.PENDING) {
                 return false;
             }
         }
@@ -319,6 +318,37 @@ public class EncounterBatchService {
                     "필연이 되었어요!", "두 번째 스침! 상대방의 프로필을 확인해보세요.");
 
             log.info("[배치] 우연→필연: rel={} (무기한)", relationship.getId());
+        } else if (prevStatus == RelationshipStatus.PILYEON) {
+            // 필연 → 인연 자동 전환 (3번째 스침 → 운명) (D3)
+            relationship.recordEncounter();
+            relationship.updateStatus(RelationshipStatus.INYEON);
+            relationship.markDestinyBadge();
+
+            Encounter encounter = Encounter.builder()
+                    .relationship(relationship)
+                    .user1(user1)
+                    .user2(user2)
+                    .h3Index(h3Index)
+                    .latitude(lat)
+                    .longitude(lng)
+                    .distance(distance)
+                    .encounterNumber(relationship.getEncounterCount())
+                    .batchWindowAt(batchWindow)
+                    .build();
+            encounterRepository.save(encounter);
+
+            saveLog(relationship, RelationshipStatus.PILYEON, RelationshipStatus.INYEON,
+                    RelationshipTrigger.ENCOUNTER, null);
+
+            createEncounterNotification(user1, relationship.getId(),
+                    NotificationType.ENCOUNTER_INYEON_DESTINY,
+                    "운명적인 만남!", "세 번째 스침! 운명의 상대를 만났어요.");
+            createEncounterNotification(user2, relationship.getId(),
+                    NotificationType.ENCOUNTER_INYEON_DESTINY,
+                    "운명적인 만남!", "세 번째 스침! 운명의 상대를 만났어요.");
+
+            log.info("[배치] 필연→인연(운명): rel={}, encounterCount={}",
+                    relationship.getId(), relationship.getEncounterCount());
         } else if (prevStatus == RelationshipStatus.PAST) {
             // PAST 상태에서 다시 스침 → 스침 카운트만 증가 (상태 변경 없음)
             relationship.recordEncounter();

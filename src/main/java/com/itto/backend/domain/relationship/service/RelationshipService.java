@@ -75,6 +75,7 @@ public class RelationshipService {
                             .expiresAt(r.getExpiresAt())
                             .createdAt(r.getCreatedAt())
                             .chatRoomId(r.getChatRoomId())
+                            .destinyBadge(r.isDestinyBadge())
                             .build();
                 }).toList();
 
@@ -147,6 +148,7 @@ public class RelationshipService {
                 .expiresAt(rel.getExpiresAt())
                 .createdAt(rel.getCreatedAt())
                 .chatRoomId(rel.getChatRoomId())
+                .destinyBadge(rel.isDestinyBadge())
                 .build();
     }
 
