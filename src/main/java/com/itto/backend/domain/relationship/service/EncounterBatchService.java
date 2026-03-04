@@ -294,10 +294,9 @@ public class EncounterBatchService {
 
             log.info("[배치] 재시작 우연: rel={}", relationship.getId());
         } else if (prevStatus == RelationshipStatus.UYEON) {
-            // 우연 → 필연 자동 전환 (2번째 스침)
+            // 우연 → 필연 자동 전환 (2번째 스침) — 무기한 유지 (D11)
             relationship.recordEncounter();
-            LocalDateTime expiresAt = batchWindow.plusHours(24);
-            relationship.updateStatusWithExpiry(RelationshipStatus.PILYEON, expiresAt);
+            relationship.updateStatusWithExpiry(RelationshipStatus.PILYEON, null);
 
             Encounter encounter = Encounter.builder()
                     .relationship(relationship)
@@ -319,7 +318,7 @@ public class EncounterBatchService {
             createEncounterNotification(user2, relationship.getId(), NotificationType.ENCOUNTER_PILYEON,
                     "필연이 되었어요!", "두 번째 스침! 상대방의 프로필을 확인해보세요.");
 
-            log.info("[배치] 우연→필연: rel={}, expires={}", relationship.getId(), expiresAt);
+            log.info("[배치] 우연→필연: rel={} (무기한)", relationship.getId());
         } else if (prevStatus == RelationshipStatus.PAST) {
             // PAST 상태에서 다시 스침 → 스침 카운트만 증가 (상태 변경 없음)
             relationship.recordEncounter();
@@ -343,26 +342,17 @@ public class EncounterBatchService {
 
     /**
      * 만료된 관계 상태 전이 처리
-     * - PILYEON(24h) → PAST(7d)
-     * - PENDING(필연 만료) → PAST(7d)
+     * - PENDING(24h) → PAST(7d)
      * - INYEON(7d) → PAST(7d)
      * - PAST(7d) → ENDED
+     * Note: PILYEON은 무기한 유지 (D11)
      */
     @Transactional
     public int processExpirations() {
         LocalDateTime now = LocalDateTime.now();
         int processed = 0;
 
-        // PILYEON 만료 → PAST
-        List<Relationship> expiredPilyeon = relationshipRepository.findByStatusAndExpiresAtBefore(
-                RelationshipStatus.PILYEON, now);
-        for (Relationship rel : expiredPilyeon) {
-            rel.updateStatusWithExpiry(RelationshipStatus.PAST, now.plusDays(7));
-            saveLog(rel, RelationshipStatus.PILYEON, RelationshipStatus.PAST, RelationshipTrigger.EXPIRE, null);
-            processed++;
-        }
-
-        // PENDING 만료 (필연 타이머가 만료된 경우) → PAST
+        // PENDING 만료 (인연 신청 타이머가 만료된 경우) → PAST
         List<Relationship> expiredPending = relationshipRepository.findByStatusAndExpiresAtBefore(
                 RelationshipStatus.PENDING, now);
         for (Relationship rel : expiredPending) {
@@ -390,8 +380,8 @@ public class EncounterBatchService {
         }
 
         if (processed > 0) {
-            log.info("[배치] 만료 처리: {}건 (PILYEON={}, PENDING={}, INYEON={}, PAST={})",
-                    processed, expiredPilyeon.size(), expiredPending.size(),
+            log.info("[배치] 만료 처리: {}건 (PENDING={}, INYEON={}, PAST={})",
+                    processed, expiredPending.size(),
                     expiredInyeon.size(), expiredPast.size());
         }
 

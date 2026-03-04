@@ -369,9 +369,8 @@ public class RelationshipService {
 
         request.respond(RestoreRequestStatus.ACCEPTED);
 
-        // PILYEON으로 복귀, 24시간 타이머
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
-        rel.updateStatusWithExpiry(RelationshipStatus.PILYEON, expiresAt);
+        // PILYEON으로 복귀 — 무기한 유지 (D11)
+        rel.updateStatusWithExpiry(RelationshipStatus.PILYEON, null);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
@@ -380,7 +379,6 @@ public class RelationshipService {
         return RestoreAcceptResponse.builder()
                 .status("PILYEON")
                 .message("복원이 완료되었습니다")
-                .expiresAt(expiresAt)
                 .build();
     }
 
@@ -455,8 +453,8 @@ public class RelationshipService {
             knotsUsed = KNOTS_COST;
         }
 
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
-        rel.updateStatusWithExpiry(RelationshipStatus.PILYEON, expiresAt);
+        // 필연은 무기한 유지 (D11)
+        rel.updateStatusWithExpiry(RelationshipStatus.PILYEON, null);
 
         saveLog(rel, RelationshipStatus.UYEON, RelationshipStatus.PILYEON, RelationshipTrigger.REQUEST, user);
 
@@ -465,7 +463,6 @@ public class RelationshipService {
                 .message("필연으로 전환되었습니다")
                 .knotsUsed(knotsUsed)
                 .remainingKnots(user.getKnots())
-                .expiresAt(expiresAt)
                 .build();
     }
 
