@@ -63,6 +63,10 @@ public class Relationship extends BaseEntity {
     @Column(name = "chat_room_id", length = 100)
     private String chatRoomId;
 
+    @Column(name = "destiny_badge", nullable = false)
+    @Builder.Default
+    private boolean destinyBadge = false;
+
     public void recordEncounter() {
         this.encounterCount++;
         this.lastEncounterAt = LocalDateTime.now();
@@ -80,6 +84,10 @@ public class Relationship extends BaseEntity {
         this.status = newStatus;
         this.statusChangedAt = LocalDateTime.now();
         this.expiresAt = expiresAt;
+    }
+
+    public void markDestinyBadge() {
+        this.destinyBadge = true;
     }
 
     public void setChatRoomId(String chatRoomId) {

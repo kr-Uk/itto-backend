@@ -21,6 +21,7 @@ public class RelationshipDetailResponse {
     private LocalDateTime expiresAt;
     private LocalDateTime createdAt;
     private String chatRoomId;
+    private boolean destinyBadge;
 
     @Getter
     @Builder
