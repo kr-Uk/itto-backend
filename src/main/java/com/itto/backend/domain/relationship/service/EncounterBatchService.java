@@ -36,7 +36,7 @@ import java.util.*;
 @Service
 public class EncounterBatchService {
 
-    private static final double ENCOUNTER_DISTANCE_METERS = 200.0;
+    private static final double ENCOUNTER_DISTANCE_METERS = 100.0;
     private static final String LOCATION_USER_PREFIX = "location:user:";
     private static final String LOCATION_H3_PREFIX = "location:h3:";
     private static final String ENCOUNTER_COOLDOWN_PREFIX = "encounter:cooldown:";
