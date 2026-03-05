@@ -46,8 +46,11 @@ public class SubscriptionResponse {
         @Schema(description = "월간 무료 변환 횟수", example = "6")
         private Integer convertPerMonth;
 
-        @Schema(description = "무제한 신청 가능 여부", example = "true")
+        @Schema(description = "무제한 신청 가능 여부", example = "false")
         private Boolean unlimitedRequests;
+
+        @Schema(description = "월간 무료 인연 신청 횟수", example = "6")
+        private Integer requestsPerMonth;
 
         @Schema(description = "월간 무료 복원 횟수", example = "3")
         private Integer freeRestorePerMonth;

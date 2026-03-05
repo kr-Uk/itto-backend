@@ -33,7 +33,8 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class RelationshipService {
 
-    private static final int FREE_REQUESTS_PER_MONTH = 3;
+    private static final int FREE_REQUESTS_PER_MONTH = 1;
+    private static final int PREMIUM_REQUESTS_PER_MONTH = 6;
     private static final int FREE_CONVERTS_PER_MONTH = 1;
     private static final int PREMIUM_CONVERTS_PER_MONTH = 6;
     private static final int KNOTS_COST = 30;
@@ -171,7 +172,7 @@ public class RelationshipService {
 
         // 무료 횟수 확인 및 매듭 차감
         MonthlyUsage usage = getOrCreateMonthlyUsage(requester);
-        int freeLimit = requester.getIsPremium() ? Integer.MAX_VALUE : FREE_REQUESTS_PER_MONTH;
+        int freeLimit = requester.getIsPremium() ? PREMIUM_REQUESTS_PER_MONTH : FREE_REQUESTS_PER_MONTH;
         int knotsUsed = 0;
 
         if (usage.getFreeRequestsUsed() < freeLimit) {
@@ -186,9 +187,7 @@ public class RelationshipService {
             knotsUsed = KNOTS_COST;
         }
 
-        int freeRemaining = requester.getIsPremium()
-                ? Integer.MAX_VALUE
-                : Math.max(0, freeLimit - usage.getFreeRequestsUsed());
+        int freeRemaining = Math.max(0, freeLimit - usage.getFreeRequestsUsed());
 
         // 인연 신청 생성
         InyeonRequest request = InyeonRequest.builder()

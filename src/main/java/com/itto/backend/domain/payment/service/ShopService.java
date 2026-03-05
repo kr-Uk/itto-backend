@@ -44,12 +44,12 @@ public class ShopService {
 
     // 무료 횟수 (비프리미엄 기준)
     private static final int FREE_CONVERTS_PER_MONTH = 1;
-    private static final int FREE_REQUESTS_PER_MONTH = 3;
+    private static final int FREE_REQUESTS_PER_MONTH = 1;
     private static final int FREE_RESTORES_PER_MONTH = 0;
 
     // 프리미엄 혜택
     private static final int PREMIUM_CONVERTS_PER_MONTH = 6;
-    private static final boolean PREMIUM_UNLIMITED_REQUESTS = true;
+    private static final int PREMIUM_REQUESTS_PER_MONTH = 6;
     private static final int PREMIUM_RESTORES_PER_MONTH = 3;
     private static final boolean PREMIUM_AD_FREE = true;
 
@@ -70,13 +70,13 @@ public class ShopService {
 
         // 프리미엄 여부에 따라 무료 횟수 계산
         int freeConvertsLimit = user.getIsPremium() ? PREMIUM_CONVERTS_PER_MONTH : FREE_CONVERTS_PER_MONTH;
-        int freeRequestsLimit = user.getIsPremium() ? Integer.MAX_VALUE : FREE_REQUESTS_PER_MONTH;
+        int freeRequestsLimit = user.getIsPremium() ? PREMIUM_REQUESTS_PER_MONTH : FREE_REQUESTS_PER_MONTH;
         int freeRestoresLimit = user.getIsPremium() ? PREMIUM_RESTORES_PER_MONTH : FREE_RESTORES_PER_MONTH;
 
         return KnotsBalanceResponse.builder()
                 .knots(user.getKnots())
                 .freeConvertRemaining(Math.max(0, freeConvertsLimit - freeConvertsUsed))
-                .freeRequestRemaining(user.getIsPremium() ? Integer.MAX_VALUE : Math.max(0, freeRequestsLimit - freeRequestsUsed))
+                .freeRequestRemaining(Math.max(0, freeRequestsLimit - freeRequestsUsed))
                 .freeRestoreRemaining(Math.max(0, freeRestoresLimit - freeRestoresUsed))
                 .build();
     }
@@ -203,7 +203,8 @@ public class ShopService {
                 .isPromotion(subscription.getIsPromotion())
                 .benefits(SubscriptionBenefits.builder()
                         .convertPerMonth(PREMIUM_CONVERTS_PER_MONTH)
-                        .unlimitedRequests(PREMIUM_UNLIMITED_REQUESTS)
+                        .unlimitedRequests(false)
+                        .requestsPerMonth(PREMIUM_REQUESTS_PER_MONTH)
                         .freeRestorePerMonth(PREMIUM_RESTORES_PER_MONTH)
                         .adFree(PREMIUM_AD_FREE)
                         .build())
