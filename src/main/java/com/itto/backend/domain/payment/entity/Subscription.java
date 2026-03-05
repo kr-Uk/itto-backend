@@ -72,4 +72,8 @@ public class Subscription extends BaseEntity {
         this.cancelledAt = LocalDateTime.now();
         this.isActive = false;
     }
+
+    public void expire() {
+        this.isActive = false;
+    }
 }
