@@ -81,6 +81,11 @@ public enum ErrorCode {
     EXCLUDED_AREA_LIMIT(400, "제외 지역은 최대 3개까지 등록할 수 있습니다", "EXCLUDED_AREA_LIMIT"),
     EXCLUDED_CELLS_LIMIT(400, "제외 셀은 최대 20개까지 선택할 수 있습니다", "EXCLUDED_CELLS_LIMIT"),
 
+    // 연락처 해시
+    INVALID_HASH_FORMAT(400, "잘못된 해시 형식입니다 (64자 hex string 필요)", "INVALID_HASH_FORMAT"),
+    CONTACT_HASH_NOT_FOUND(404, "연락처 해시를 찾을 수 없습니다", "CONTACT_HASH_NOT_FOUND"),
+    HASH_LIMIT_EXCEEDED(400, "연락처 해시 업로드 제한을 초과했습니다 (최대 5000개)", "HASH_LIMIT_EXCEEDED"),
+
     // 결제
     INVALID_RECEIPT(400, "유효하지 않은 영수증입니다", "INVALID_RECEIPT"),
     FREE_USAGE_EXHAUSTED(400, "이번 달 무료 횟수를 모두 사용했습니다", "FREE_USAGE_EXHAUSTED");
