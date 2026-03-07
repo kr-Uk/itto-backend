@@ -1,9 +1,9 @@
 package com.itto.backend.domain.relationship.entity;
 
 import com.itto.backend.domain.user.entity.User;
-import com.itto.backend.global.entity.BaseTimeEntity;
-import com.itto.backend.global.enums.RelationshipStatus;
-import com.itto.backend.global.enums.RelationshipTrigger;
+import com.itto.backend.domain.common.entity.BaseTimeEntity;
+import com.itto.backend.domain.common.enums.RelationshipStatus;
+import com.itto.backend.domain.common.enums.RelationshipTrigger;
 import jakarta.persistence.*;
 import lombok.*;
 

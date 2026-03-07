@@ -1,8 +1,9 @@
 package com.itto.backend.domain.relationship.service;
+import com.itto.backend.application.relationship.EncounterBatchService;
 
 import com.itto.backend.domain.block.repository.BlockRepository;
 import com.itto.backend.domain.location.repository.ExcludedAreaH3IndexRepository;
-import com.itto.backend.domain.notification.service.NotificationService;
+import com.itto.backend.application.notification.NotificationService;
 import com.itto.backend.domain.relationship.entity.Encounter;
 import com.itto.backend.domain.relationship.entity.Relationship;
 import com.itto.backend.domain.relationship.entity.RelationshipLog;
@@ -13,7 +14,7 @@ import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.entity.UserSetting;
 import com.itto.backend.domain.user.repository.UserRepository;
 import com.itto.backend.domain.user.repository.UserSettingRepository;
-import com.itto.backend.global.enums.*;
+import com.itto.backend.domain.common.enums.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,14 +68,14 @@ class EncounterBatchServiceD3Test {
                 blockRepository, excludedAreaH3IndexRepository, notificationService);
 
         user1 = User.builder()
-                .userId(1L).firebaseUid("fb-1").provider(Provider.KAKAO)
+                .userId(1L).providerUid("fb-1").provider(Provider.KAKAO)
                 .nickname("user1").gender(Gender.MALE)
                 .birthDate(LocalDate.of(1995, 1, 1))
                 .locationEnabled(true)
                 .verificationStatus(VerificationStatus.APPROVED)
                 .build();
         user2 = User.builder()
-                .userId(2L).firebaseUid("fb-2").provider(Provider.KAKAO)
+                .userId(2L).providerUid("fb-2").provider(Provider.KAKAO)
                 .nickname("user2").gender(Gender.FEMALE)
                 .birthDate(LocalDate.of(1996, 1, 1))
                 .locationEnabled(true)

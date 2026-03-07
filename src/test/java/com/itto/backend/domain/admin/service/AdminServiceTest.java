@@ -1,15 +1,16 @@
 package com.itto.backend.domain.admin.service;
+import com.itto.backend.application.admin.AdminService;
 
-import com.itto.backend.domain.admin.dto.RejectRequest;
-import com.itto.backend.domain.admin.dto.VerificationListResponse;
+import com.itto.backend.presentation.dto.admin.RejectRequest;
+import com.itto.backend.presentation.dto.admin.VerificationListResponse;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.entity.UserPhoto;
 import com.itto.backend.domain.user.repository.UserPhotoRepository;
 import com.itto.backend.domain.user.repository.UserRepository;
-import com.itto.backend.global.enums.Gender;
-import com.itto.backend.global.enums.Provider;
-import com.itto.backend.global.enums.VerificationStatus;
-import com.itto.backend.global.exception.BusinessException;
+import com.itto.backend.domain.common.enums.Gender;
+import com.itto.backend.domain.common.enums.Provider;
+import com.itto.backend.domain.common.enums.VerificationStatus;
+import com.itto.backend.domain.common.exception.BusinessException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

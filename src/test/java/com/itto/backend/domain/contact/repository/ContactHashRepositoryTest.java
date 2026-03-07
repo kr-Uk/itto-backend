@@ -16,7 +16,7 @@ class ContactHashRepositoryTest {
         // ContactHash는 phoneHash만 저장, 원문 전화번호 필드 없음
         ContactHash hash = ContactHash.builder()
                 .phoneHash("a".repeat(64))
-                .user(User.builder().firebaseUid("test").build())
+                .user(User.builder().providerUid("test").build())
                 .build();
 
         assertThat(hash.getPhoneHash()).hasSize(64);
@@ -27,7 +27,7 @@ class ContactHashRepositoryTest {
     @Test
     @DisplayName("ContactHash 빌더로 올바르게 생성")
     void builderCreatesEntity() {
-        User user = User.builder().firebaseUid("firebase-1").build();
+        User user = User.builder().providerUid("firebase-1").build();
         String phoneHash = "abcdef1234567890".repeat(4);
 
         ContactHash hash = ContactHash.builder()

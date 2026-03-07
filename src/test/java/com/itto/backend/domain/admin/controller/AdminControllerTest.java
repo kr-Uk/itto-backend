@@ -1,9 +1,10 @@
 package com.itto.backend.domain.admin.controller;
+import com.itto.backend.presentation.api.AdminController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itto.backend.domain.admin.dto.RejectRequest;
-import com.itto.backend.domain.admin.dto.VerificationListResponse;
-import com.itto.backend.domain.admin.service.AdminService;
+import com.itto.backend.presentation.dto.admin.RejectRequest;
+import com.itto.backend.presentation.dto.admin.VerificationListResponse;
+import com.itto.backend.application.admin.AdminService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 package com.itto.backend.domain.relationship.entity;
 
 import com.itto.backend.domain.user.entity.User;
-import com.itto.backend.global.entity.BaseEntity;
-import com.itto.backend.global.enums.RestoreRequestStatus;
+import com.itto.backend.domain.common.entity.BaseEntity;
+import com.itto.backend.domain.common.enums.RestoreRequestStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

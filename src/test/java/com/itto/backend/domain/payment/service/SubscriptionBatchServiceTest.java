@@ -1,12 +1,13 @@
 package com.itto.backend.domain.payment.service;
+import com.itto.backend.application.payment.SubscriptionBatchService;
 
 import com.itto.backend.domain.payment.entity.Subscription;
 import com.itto.backend.domain.payment.repository.SubscriptionRepository;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.UserRepository;
-import com.itto.backend.global.enums.Provider;
-import com.itto.backend.global.enums.Store;
-import com.itto.backend.global.enums.SubscriptionPlan;
+import com.itto.backend.domain.common.enums.Provider;
+import com.itto.backend.domain.common.enums.Store;
+import com.itto.backend.domain.common.enums.SubscriptionPlan;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +40,7 @@ class SubscriptionBatchServiceTest {
     private User buildPremiumUser(Long id) {
         return User.builder()
                 .userId(id)
-                .firebaseUid("firebase-" + id)
+                .providerUid("firebase-" + id)
                 .provider(Provider.KAKAO)
                 .isPremium(true)
                 .knots(0)

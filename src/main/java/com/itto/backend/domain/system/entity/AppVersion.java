@@ -1,7 +1,7 @@
 package com.itto.backend.domain.system.entity;
 
-import com.itto.backend.global.entity.BaseEntity;
-import com.itto.backend.global.enums.Platform;
+import com.itto.backend.domain.common.entity.BaseEntity;
+import com.itto.backend.domain.common.enums.Platform;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -1,8 +1,9 @@
 package com.itto.backend.domain.relationship.service;
+import com.itto.backend.application.relationship.EncounterBatchService;
 
 import com.itto.backend.domain.block.repository.BlockRepository;
 import com.itto.backend.domain.location.repository.ExcludedAreaH3IndexRepository;
-import com.itto.backend.domain.notification.service.NotificationService;
+import com.itto.backend.application.notification.NotificationService;
 import com.itto.backend.domain.relationship.entity.Encounter;
 import com.itto.backend.domain.relationship.entity.Relationship;
 import com.itto.backend.domain.relationship.repository.EncounterRepository;
@@ -11,8 +12,8 @@ import com.itto.backend.domain.relationship.repository.RelationshipRepository;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.UserRepository;
 import com.itto.backend.domain.user.repository.UserSettingRepository;
-import com.itto.backend.global.enums.Provider;
-import com.itto.backend.global.enums.VerificationStatus;
+import com.itto.backend.domain.common.enums.Provider;
+import com.itto.backend.domain.common.enums.VerificationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -72,7 +73,7 @@ class EncounterBatchServiceD1Test {
 
         userA = User.builder()
                 .userId(1L)
-                .firebaseUid("firebase-a")
+                .providerUid("firebase-a")
                 .provider(Provider.KAKAO)
                 .nickname("UserA")
                 .verificationStatus(VerificationStatus.APPROVED)
@@ -81,7 +82,7 @@ class EncounterBatchServiceD1Test {
 
         userB = User.builder()
                 .userId(2L)
-                .firebaseUid("firebase-b")
+                .providerUid("firebase-b")
                 .provider(Provider.KAKAO)
                 .nickname("UserB")
                 .verificationStatus(VerificationStatus.APPROVED)

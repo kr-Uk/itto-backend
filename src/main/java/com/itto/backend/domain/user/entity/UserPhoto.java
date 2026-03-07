@@ -1,6 +1,6 @@
 package com.itto.backend.domain.user.entity;
 
-import com.itto.backend.global.entity.BaseEntity;
+import com.itto.backend.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

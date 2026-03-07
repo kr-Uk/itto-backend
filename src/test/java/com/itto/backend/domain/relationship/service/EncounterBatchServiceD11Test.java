@@ -1,8 +1,9 @@
 package com.itto.backend.domain.relationship.service;
+import com.itto.backend.application.relationship.EncounterBatchService;
 
 import com.itto.backend.domain.block.repository.BlockRepository;
 import com.itto.backend.domain.location.repository.ExcludedAreaH3IndexRepository;
-import com.itto.backend.domain.notification.service.NotificationService;
+import com.itto.backend.application.notification.NotificationService;
 import com.itto.backend.domain.relationship.entity.Relationship;
 import com.itto.backend.domain.relationship.repository.EncounterRepository;
 import com.itto.backend.domain.relationship.repository.RelationshipLogRepository;
@@ -10,7 +11,7 @@ import com.itto.backend.domain.relationship.repository.RelationshipRepository;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.UserRepository;
 import com.itto.backend.domain.user.repository.UserSettingRepository;
-import com.itto.backend.global.enums.*;
+import com.itto.backend.domain.common.enums.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,8 +61,8 @@ class EncounterBatchServiceD11Test {
     @DisplayName("D11: PILYEON 관계는 만료 처리에서 제외되어야 한다")
     void processExpirations_pilyeonShouldNotExpire() {
         // given: expired PILYEON relationships exist
-        User user1 = User.builder().userId(1L).firebaseUid("fb-1").provider(Provider.KAKAO).build();
-        User user2 = User.builder().userId(2L).firebaseUid("fb-2").provider(Provider.KAKAO).build();
+        User user1 = User.builder().userId(1L).providerUid("fb-1").provider(Provider.KAKAO).build();
+        User user2 = User.builder().userId(2L).providerUid("fb-2").provider(Provider.KAKAO).build();
 
         Relationship pilyeonRel = Relationship.builder()
                 .user1(user1).user2(user2)
@@ -100,8 +101,8 @@ class EncounterBatchServiceD11Test {
     @DisplayName("D11: PENDING 24h 만료는 여전히 동작해야 한다")
     void processExpirations_pendingShouldStillExpire() {
         // given
-        User user1 = User.builder().userId(1L).firebaseUid("fb-1").provider(Provider.KAKAO).build();
-        User user2 = User.builder().userId(2L).firebaseUid("fb-2").provider(Provider.KAKAO).build();
+        User user1 = User.builder().userId(1L).providerUid("fb-1").provider(Provider.KAKAO).build();
+        User user2 = User.builder().userId(2L).providerUid("fb-2").provider(Provider.KAKAO).build();
 
         Relationship pendingRel = Relationship.builder()
                 .user1(user1).user2(user2)
@@ -136,8 +137,8 @@ class EncounterBatchServiceD11Test {
     @DisplayName("D11: PAST 7일 만료 → ENDED는 여전히 동작해야 한다")
     void processExpirations_pastShouldStillExpireToEnded() {
         // given
-        User user1 = User.builder().userId(1L).firebaseUid("fb-1").provider(Provider.KAKAO).build();
-        User user2 = User.builder().userId(2L).firebaseUid("fb-2").provider(Provider.KAKAO).build();
+        User user1 = User.builder().userId(1L).providerUid("fb-1").provider(Provider.KAKAO).build();
+        User user2 = User.builder().userId(2L).providerUid("fb-2").provider(Provider.KAKAO).build();
 
         Relationship pastRel = Relationship.builder()
                 .user1(user1).user2(user2)

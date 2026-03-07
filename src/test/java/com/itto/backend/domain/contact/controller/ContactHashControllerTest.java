@@ -1,10 +1,11 @@
 package com.itto.backend.domain.contact.controller;
+import com.itto.backend.presentation.api.ContactHashController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itto.backend.domain.contact.dto.ContactHashUploadRequest;
-import com.itto.backend.domain.contact.dto.ManualBlockRequest;
+import com.itto.backend.presentation.dto.contact.ContactHashUploadRequest;
+import com.itto.backend.presentation.dto.contact.ManualBlockRequest;
 import com.itto.backend.domain.contact.entity.ContactHash;
-import com.itto.backend.domain.contact.service.ContactHashService;
+import com.itto.backend.application.contact.ContactHashService;
 import com.itto.backend.domain.user.entity.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
