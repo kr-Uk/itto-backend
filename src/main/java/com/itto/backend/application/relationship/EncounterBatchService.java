@@ -2,7 +2,6 @@ package com.itto.backend.application.relationship;
 
 import com.itto.backend.domain.block.repository.BlockRepository;
 import com.itto.backend.domain.location.repository.ExcludedAreaH3IndexRepository;
-import com.itto.backend.application.location.LocationService;
 import com.itto.backend.application.notification.NotificationService;
 import com.itto.backend.domain.relationship.entity.Encounter;
 import com.itto.backend.domain.relationship.entity.Relationship;
@@ -256,7 +255,7 @@ public class EncounterBatchService {
         createEncounterNotification(user2, relationship.getId(), NotificationType.ENCOUNTER_UYEON,
                 "새로운 우연", "누군가와 스쳤어요!");
 
-        log.info("[배치] 새 우연: user1={}, user2={}, distance={:.1f}m", user1.getUserId(), user2.getUserId(), distance);
+        log.info("[배치] 새 우연: user1={}, user2={}, distance={}m", user1.getUserId(), user2.getUserId(), String.format("%.1f", distance));
     }
 
     /**

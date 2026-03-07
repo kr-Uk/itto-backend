@@ -79,7 +79,7 @@ public class AuthService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public RefreshResponse refresh(RefreshRequest request) {
         String refreshToken = request.getRefreshToken();
 
@@ -118,7 +118,6 @@ public class AuthService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
     public void logout(Long userId) {
         // Redis에서 Refresh 토큰 삭제
         redisTemplate.delete(REFRESH_TOKEN_PREFIX + userId);

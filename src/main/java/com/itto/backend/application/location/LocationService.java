@@ -166,7 +166,7 @@ public class LocationService {
 
         // 제외 지역 개수 제한 확인 (최대 3개)
         long count = excludedAreaRepository.countByUserUserId(userId);
-        if (count >= 3) {
+        if (count >= BusinessConstants.MAX_EXCLUDED_AREAS) {
             throw new BusinessException(ErrorCode.EXCLUDED_AREA_LIMIT);
         }
 
@@ -305,7 +305,7 @@ public class LocationService {
 
         List<String> h3Indexes = request.getH3Indexes() != null ? request.getH3Indexes() : List.of();
 
-        if (h3Indexes.size() > 20) {
+        if (h3Indexes.size() > BusinessConstants.MAX_EXCLUDED_CELLS) {
             throw new BusinessException(ErrorCode.EXCLUDED_CELLS_LIMIT);
         }
 

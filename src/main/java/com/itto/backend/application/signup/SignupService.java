@@ -11,6 +11,7 @@ import com.itto.backend.domain.user.entity.UserSetting;
 import com.itto.backend.domain.user.entity.UserTerm;
 import com.itto.backend.domain.user.entity.Verification;
 import com.itto.backend.domain.user.repository.*;
+import com.itto.backend.domain.common.constants.BusinessConstants;
 import com.itto.backend.domain.common.enums.Gender;
 import com.itto.backend.domain.common.enums.VerificationStatus;
 import com.itto.backend.domain.common.exception.BusinessException;
@@ -68,7 +69,7 @@ public class SignupService {
         }
 
         // 나이 제한 체크 (만 19세 이상)
-        if (Period.between(request.getBirthDate(), LocalDate.now()).getYears() < 19) {
+        if (Period.between(request.getBirthDate(), LocalDate.now()).getYears() < BusinessConstants.MIN_AGE) {
             throw new BusinessException(ErrorCode.AGE_RESTRICTION);
         }
 
@@ -98,7 +99,7 @@ public class SignupService {
         if (photos == null || photos.isEmpty()) {
             throw new BusinessException(ErrorCode.PHOTO_MIN);
         }
-        if (photos.size() > 3) {
+        if (photos.size() > BusinessConstants.MAX_PHOTOS) {
             throw new BusinessException(ErrorCode.PHOTO_MAX);
         }
 
