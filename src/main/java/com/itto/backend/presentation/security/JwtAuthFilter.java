@@ -61,15 +61,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             // 3단계: 토큰이 유효한지 검증 (만료, 위조 여부 확인)
             if (jwtProvider.validateToken(token)) {
-                // 4단계: 토큰에서 사용자 ID를 꺼냄
+                // 4단계: 토큰에서 사용자 ID와 역할을 꺼냄
                 Long userId = jwtProvider.getUserIdFromToken(token);
+                String role = jwtProvider.getRoleFromToken(token);
+                String authority = "ROLE_" + (role != null ? role : "USER");
 
                 // 5단계: 스프링 시큐리티에 "이 사용자는 인증된 사용자"라고 등록
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,                                         // 인증된 사용자의 ID
-                                null,                                           // 비밀번호 (JWT 방식에서는 불필요)
-                                List.of(new SimpleGrantedAuthority("ROLE_USER")) // 사용자 권한 (일반 사용자)
+                                userId,                                       // 인증된 사용자의 ID
+                                null,                                         // 비밀번호 (JWT 방식에서는 불필요)
+                                List.of(new SimpleGrantedAuthority(authority)) // JWT에서 추출한 실제 권한
                         );
 
                 // 현재 요청의 보안 컨텍스트에 인증 정보를 저장 → 이후 컨트롤러에서 사용자 ID를 꺼내 쓸 수 있음

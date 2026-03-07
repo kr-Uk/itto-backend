@@ -333,7 +333,7 @@ public class RelationshipService {
             throw new BusinessException(ErrorCode.NOT_PAST);
         }
 
-        int restoreCost = 30;
+        int restoreCost = BusinessConstants.RESTORE_KNOTS_COST;
         User requester = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 

@@ -69,6 +69,12 @@ public class JwtProvider {
         return Long.parseLong(claims.getSubject());  // subject에 저장된 사용자 ID를 꺼냄
     }
 
+    /** 토큰에서 역할(role)을 꺼내는 메서드 */
+    public String getRoleFromToken(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("role", String.class);
+    }
+
     /** 토큰이 유효한지 검증하는 메서드 (만료 여부, 위조 여부 확인) */
     public boolean validateToken(String token) {
         try {

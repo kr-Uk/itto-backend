@@ -36,11 +36,11 @@ public class ShopService {
     private final KnotTransactionRepository knotTransactionRepository;
     private final ReceiptValidationService receiptValidationService;
 
-    // 패키지 목록 (하드코딩)
+    // 패키지 목록 (BusinessConstants 참조)
     private static final List<PackageData> PACKAGES = List.of(
-            new PackageData(1L, "실마리", 7900, 80, 160),
-            new PackageData(2L, "매듭 뭉치", 19900, 250, 500),
-            new PackageData(3L, "실타래", 49900, 800, 1600)
+            new PackageData(1L, "실마리", BusinessConstants.SILMARI_PRICE, BusinessConstants.SILMARI_KNOTS, BusinessConstants.SILMARI_FIRST_KNOTS),
+            new PackageData(2L, "매듭 뭉치", BusinessConstants.MAEDUP_PRICE, BusinessConstants.MAEDUP_KNOTS, BusinessConstants.MAEDUP_FIRST_KNOTS),
+            new PackageData(3L, "실타래", BusinessConstants.SILTARAE_PRICE, BusinessConstants.SILTARAE_KNOTS, BusinessConstants.SILTARAE_FIRST_KNOTS)
     );
 
     // 무료 횟수 (비프리미엄 기준)
@@ -244,7 +244,7 @@ public class ShopService {
                 .store(Store.valueOf(request.getStore()))
                 .storeSubscriptionId(validationResult.getTransactionId()) // 검증된 transactionId 사용
                 .plan(SubscriptionPlan.MONTHLY)
-                .price(6900)
+                .price(BusinessConstants.SUBSCRIPTION_LAUNCH_PRICE)
                 .isPromotion(true) // TODO: 실제 프로모션 여부
                 .startedAt(now)
                 .expiresAt(expiresAt)

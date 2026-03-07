@@ -13,6 +13,7 @@ import com.itto.backend.domain.user.entity.Verification;
 import com.itto.backend.domain.user.repository.UserPhotoRepository;
 import com.itto.backend.domain.user.repository.UserRepository;
 import com.itto.backend.domain.user.repository.VerificationRepository;
+import com.itto.backend.domain.common.constants.BusinessConstants;
 import com.itto.backend.domain.common.enums.RelationshipStatus;
 import com.itto.backend.domain.common.enums.VerificationStatus;
 import com.itto.backend.domain.common.exception.BusinessException;
@@ -164,7 +165,7 @@ public class ProfileService {
         if (result.isEmpty()) {
             throw new BusinessException(ErrorCode.MIN_PHOTO_REQUIRED);
         }
-        if (result.size() > 3) {
+        if (result.size() > BusinessConstants.MAX_PHOTOS) {
             throw new BusinessException(ErrorCode.PHOTO_MAX);
         }
 
