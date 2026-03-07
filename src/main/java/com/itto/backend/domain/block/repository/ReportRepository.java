@@ -1,7 +1,7 @@
 package com.itto.backend.domain.block.repository;
 
 import com.itto.backend.domain.block.entity.Report;
-import com.itto.backend.global.enums.ReportStatus;
+import com.itto.backend.domain.common.enums.ReportStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

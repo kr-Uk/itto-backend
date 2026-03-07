@@ -2,7 +2,7 @@ package com.itto.backend.domain.chat.entity;
 
 import com.itto.backend.domain.relationship.entity.Relationship;
 import com.itto.backend.domain.user.entity.User;
-import com.itto.backend.global.entity.BaseEntity;
+import com.itto.backend.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

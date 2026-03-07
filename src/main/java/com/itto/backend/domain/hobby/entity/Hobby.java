@@ -1,6 +1,6 @@
 package com.itto.backend.domain.hobby.entity;
 
-import com.itto.backend.global.entity.BaseTimeEntity;
+import com.itto.backend.domain.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

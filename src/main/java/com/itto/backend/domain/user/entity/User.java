@@ -1,10 +1,10 @@
 package com.itto.backend.domain.user.entity;
 
-import com.itto.backend.global.entity.BaseEntity;
-import com.itto.backend.global.enums.Gender;
-import com.itto.backend.global.enums.Provider;
-import com.itto.backend.global.enums.Role;
-import com.itto.backend.global.enums.VerificationStatus;
+import com.itto.backend.domain.common.entity.BaseEntity;
+import com.itto.backend.domain.common.enums.Gender;
+import com.itto.backend.domain.common.enums.Provider;
+import com.itto.backend.domain.common.enums.Role;
+import com.itto.backend.domain.common.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

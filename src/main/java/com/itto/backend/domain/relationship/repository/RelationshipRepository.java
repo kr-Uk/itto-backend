@@ -1,7 +1,7 @@
 package com.itto.backend.domain.relationship.repository;
 
 import com.itto.backend.domain.relationship.entity.Relationship;
-import com.itto.backend.global.enums.RelationshipStatus;
+import com.itto.backend.domain.common.enums.RelationshipStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

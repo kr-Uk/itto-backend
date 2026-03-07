@@ -1,7 +1,7 @@
 package com.itto.backend.domain.relationship.repository;
 
 import com.itto.backend.domain.relationship.entity.RestoreRequest;
-import com.itto.backend.global.enums.RestoreRequestStatus;
+import com.itto.backend.domain.common.enums.RestoreRequestStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.itto.backend.domain.user.repository;
 
 import com.itto.backend.domain.user.entity.User;
-import com.itto.backend.global.enums.Provider;
-import com.itto.backend.global.enums.VerificationStatus;
+import com.itto.backend.domain.common.enums.Provider;
+import com.itto.backend.domain.common.enums.VerificationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

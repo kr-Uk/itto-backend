@@ -1,7 +1,7 @@
 package com.itto.backend.domain.user.repository;
 
 import com.itto.backend.domain.user.entity.Verification;
-import com.itto.backend.global.enums.VerificationStatus;
+import com.itto.backend.domain.common.enums.VerificationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

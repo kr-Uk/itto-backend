@@ -1,26 +1,33 @@
 package com.itto.backend.domain.location.service;
+import com.itto.backend.application.location.LocationService;
 
-import com.itto.backend.domain.location.dto.ExcludedAreaCreateRequest;
-import com.itto.backend.domain.location.dto.ExcludedAreaCreateResponse;
-import com.itto.backend.domain.location.dto.LocationRequest;
+import com.itto.backend.presentation.dto.location.ExcludedAreaCreateRequest;
+import com.itto.backend.presentation.dto.location.ExcludedAreaCreateResponse;
+import com.itto.backend.presentation.dto.location.LocationRequest;
 import com.itto.backend.domain.location.entity.ExcludedArea;
 import com.itto.backend.domain.location.entity.ExcludedAreaH3Index;
 import com.itto.backend.domain.location.repository.ExcludedAreaH3IndexRepository;
 import com.itto.backend.domain.location.repository.ExcludedAreaRepository;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.UserRepository;
-import com.itto.backend.global.enums.Provider;
-import com.itto.backend.global.enums.VerificationStatus;
-import com.itto.backend.global.exception.BusinessException;
-import com.itto.backend.global.exception.ErrorCode;
+import com.itto.backend.domain.common.enums.Provider;
+import com.itto.backend.domain.common.enums.VerificationStatus;
+import com.itto.backend.domain.common.exception.BusinessException;
+import com.itto.backend.domain.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import com.uber.h3core.H3Core;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,6 +40,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class LocationServiceTest {
 
     @Mock
@@ -44,6 +52,18 @@ class LocationServiceTest {
     @Mock
     private ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository;
 
+    @Mock
+    private StringRedisTemplate redisTemplate;
+
+    @Mock
+    private H3Core h3;
+
+    @Mock
+    private HashOperations<String, Object, Object> hashOperations;
+
+    @Mock
+    private SetOperations<String, String> setOperations;
+
     @InjectMocks
     private LocationService locationService;
 
@@ -51,6 +71,8 @@ class LocationServiceTest {
 
     @BeforeEach
     void setUp() {
+        when(redisTemplate.opsForHash()).thenReturn(hashOperations);
+        when(redisTemplate.opsForSet()).thenReturn(setOperations);
         testUser = User.builder()
                 .userId(1L)
                 .providerUid("test-provider-uid")
@@ -76,6 +98,7 @@ class LocationServiceTest {
                 .build();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(h3.latLngToCellAddress(37.5665, 126.9780, 9)).thenReturn("8928308280fffff");
 
         // when
         locationService.sendLocation(1L, request);

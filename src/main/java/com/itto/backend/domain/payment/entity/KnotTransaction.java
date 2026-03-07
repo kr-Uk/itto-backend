@@ -1,8 +1,8 @@
 package com.itto.backend.domain.payment.entity;
 
 import com.itto.backend.domain.user.entity.User;
-import com.itto.backend.global.entity.BaseTimeEntity;
-import com.itto.backend.global.enums.KnotTransactionType;
+import com.itto.backend.domain.common.entity.BaseTimeEntity;
+import com.itto.backend.domain.common.enums.KnotTransactionType;
 import jakarta.persistence.*;
 import lombok.*;
 

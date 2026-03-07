@@ -1,6 +1,7 @@
 package com.itto.backend.domain.payment.scheduler;
+import com.itto.backend.presentation.scheduler.SubscriptionScheduler;
 
-import com.itto.backend.domain.payment.service.SubscriptionBatchService;
+import com.itto.backend.application.payment.SubscriptionBatchService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

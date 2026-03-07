@@ -1,17 +1,18 @@
 package com.itto.backend.domain.relationship.service;
+import com.itto.backend.application.relationship.RelationshipService;
 
 import com.itto.backend.domain.hobby.repository.UserHobbyRepository;
 import com.itto.backend.domain.payment.entity.MonthlyUsage;
 import com.itto.backend.domain.payment.repository.MonthlyUsageRepository;
-import com.itto.backend.domain.relationship.dto.ConvertResponse;
+import com.itto.backend.presentation.dto.relationship.ConvertResponse;
 import com.itto.backend.domain.relationship.entity.Relationship;
 import com.itto.backend.domain.relationship.repository.*;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.UserPhotoRepository;
 import com.itto.backend.domain.user.repository.UserRepository;
-import com.itto.backend.global.enums.*;
-import com.itto.backend.global.exception.BusinessException;
-import com.itto.backend.global.exception.ErrorCode;
+import com.itto.backend.domain.common.enums.*;
+import com.itto.backend.domain.common.exception.BusinessException;
+import com.itto.backend.domain.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -64,7 +65,7 @@ class RelationshipServiceConvertLimitTest {
     void setUp() {
         normalUser = User.builder()
                 .userId(1L)
-                .firebaseUid("firebase-normal")
+                .providerUid("firebase-normal")
                 .provider(Provider.KAKAO)
                 .nickname("normal")
                 .gender(Gender.MALE)
@@ -75,7 +76,7 @@ class RelationshipServiceConvertLimitTest {
 
         premiumUser = User.builder()
                 .userId(2L)
-                .firebaseUid("firebase-premium")
+                .providerUid("firebase-premium")
                 .provider(Provider.KAKAO)
                 .nickname("premium")
                 .gender(Gender.FEMALE)
@@ -86,7 +87,7 @@ class RelationshipServiceConvertLimitTest {
 
         otherUser = User.builder()
                 .userId(3L)
-                .firebaseUid("firebase-other")
+                .providerUid("firebase-other")
                 .provider(Provider.KAKAO)
                 .nickname("other")
                 .gender(Gender.FEMALE)

@@ -1,12 +1,13 @@
 package com.itto.backend.domain.contact.service;
+import com.itto.backend.application.contact.ContactHashService;
 
 import com.itto.backend.domain.contact.entity.ContactHash;
 import com.itto.backend.domain.contact.repository.ContactHashRepository;
 import com.itto.backend.domain.contact.util.PhoneNumberHashUtil;
 import com.itto.backend.domain.user.entity.User;
 import com.itto.backend.domain.user.repository.UserRepository;
-import com.itto.backend.global.exception.BusinessException;
-import com.itto.backend.global.exception.ErrorCode;
+import com.itto.backend.domain.common.exception.BusinessException;
+import com.itto.backend.domain.common.exception.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -43,7 +44,7 @@ class ContactHashServiceTest {
     @BeforeEach
     void setUp() {
         testUser = User.builder()
-                .firebaseUid("firebase-test")
+                .providerUid("firebase-test")
                 .build();
     }
 

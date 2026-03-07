@@ -1,10 +1,10 @@
 package com.itto.backend.domain.block.entity;
 
 import com.itto.backend.domain.user.entity.User;
-import com.itto.backend.global.entity.BaseEntity;
-import com.itto.backend.global.enums.ReportCategory;
-import com.itto.backend.global.enums.ReportStatus;
-import com.itto.backend.global.enums.ReportTargetType;
+import com.itto.backend.domain.common.entity.BaseEntity;
+import com.itto.backend.domain.common.enums.ReportCategory;
+import com.itto.backend.domain.common.enums.ReportStatus;
+import com.itto.backend.domain.common.enums.ReportTargetType;
 import jakarta.persistence.*;
 import lombok.*;
 
