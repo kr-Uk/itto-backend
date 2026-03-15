@@ -129,13 +129,22 @@ public class EncounterBatchService {
     private int processUserPairs(List<Long> userIds, String h3Index, LocalDateTime batchWindow) {
         int encounters = 0;
 
+        // 셀 내 모든 사용자 정보를 일괄 조회 (N+1 방지)
+        Map<Long, User> userMap = userRepository.findAllById(userIds).stream()
+                .collect(java.util.stream.Collectors.toMap(User::getUserId, u -> u));
+
+        // 셀 내 모든 사용자 설정을 일괄 조회 (N+1 방지)
+        Map<Long, UserSetting> settingsMap = userSettingRepository.findByUserUserIdIn(userIds).stream()
+                .collect(java.util.stream.Collectors.toMap(s -> s.getUser().getUserId(), s -> s));
+
         for (int i = 0; i < userIds.size(); i++) {
             for (int j = i + 1; j < userIds.size(); j++) {
                 Long userIdA = userIds.get(i);
                 Long userIdB = userIds.get(j);
 
                 try {
-                    if (processEncounterPair(userIdA, userIdB, h3Index, batchWindow)) {
+                    if (processEncounterPair(userIdA, userIdB, h3Index, batchWindow,
+                            userMap, settingsMap)) {
                         encounters++;
                     }
                 } catch (Exception e) {
@@ -151,7 +160,9 @@ public class EncounterBatchService {
      * 두 사용자 간 스침 판정 + 처리
      */
     private boolean processEncounterPair(Long userIdA, Long userIdB, String h3Index,
-                                          LocalDateTime batchWindow) {
+                                          LocalDateTime batchWindow,
+                                          Map<Long, User> userMap,
+                                          Map<Long, UserSetting> settingsMap) {
         // 1. 쿨다운 체크
         if (isOnCooldown(userIdA, userIdB)) {
             return false;
@@ -162,17 +173,17 @@ public class EncounterBatchService {
             return false;
         }
 
-        // 3. 사용자 정보 조회 + 유효성 체크
-        User userA = userRepository.findById(userIdA).orElse(null);
-        User userB = userRepository.findById(userIdB).orElse(null);
+        // 3. 사용자 정보 조회 (미리 로드된 맵에서 가져옴)
+        User userA = userMap.get(userIdA);
+        User userB = userMap.get(userIdB);
         if (userA == null || userB == null) return false;
         if (userA.isDeleted() || userB.isDeleted()) return false;
         if (!Boolean.TRUE.equals(userA.getLocationEnabled()) || !Boolean.TRUE.equals(userB.getLocationEnabled())) return false;
         if (userA.getVerificationStatus() != VerificationStatus.APPROVED
                 || userB.getVerificationStatus() != VerificationStatus.APPROVED) return false;
 
-        // 4. 매칭 설정 필터 (상호 체크)
-        if (!matchesFilter(userA, userB) || !matchesFilter(userB, userA)) {
+        // 4. 매칭 설정 필터 (상호 체크, 미리 로드된 맵 사용)
+        if (!matchesFilter(userA, userB, settingsMap) || !matchesFilter(userB, userA, settingsMap)) {
             return false;
         }
 
@@ -423,9 +434,8 @@ public class EncounterBatchService {
     /**
      * 매칭 설정 필터 체크 (A의 설정 기준으로 B가 매칭 가능한지)
      */
-    private boolean matchesFilter(User settingsOwner, User target) {
-        UserSetting settings = userSettingRepository.findByUserUserId(settingsOwner.getUserId())
-                .orElse(null);
+    private boolean matchesFilter(User settingsOwner, User target, Map<Long, UserSetting> settingsMap) {
+        UserSetting settings = settingsMap.get(settingsOwner.getUserId());
 
         // 설정이 없으면 기본값으로 통과
         if (settings == null) return true;

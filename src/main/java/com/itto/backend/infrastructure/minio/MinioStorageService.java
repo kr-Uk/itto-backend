@@ -42,9 +42,20 @@ public class MinioStorageService implements StorageService {
         }
     }
 
+    private static final java.util.Set<String> ALLOWED_CONTENT_TYPES = java.util.Set.of(
+            "image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"
+    );
+
     @Override
     public String uploadFile(MultipartFile file, String directory) {
         try {
+            // 파일 타입 검증 (이미지만 허용)
+            String contentType = file.getContentType();
+            if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase())) {
+                throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED,
+                        "허용되지 않는 파일 형식입니다. JPEG, PNG, WebP, HEIC만 업로드 가능합니다.");
+            }
+
             String objectName = directory + "/" + UUID.randomUUID() + getExtension(file.getOriginalFilename());
 
             minioClient.putObject(PutObjectArgs.builder()

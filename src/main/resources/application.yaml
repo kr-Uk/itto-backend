@@ -7,16 +7,29 @@ spring:
     username: ${DB_USER:itto}
     password: ${DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 600000
 
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 20
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
 
   data:
     redis:
       host: ${REDIS_HOST:redis}
       port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
 
 firebase:
   service-account-path: ${FIREBASE_SERVICE_ACCOUNT:classpath:firebase-service-account.json}
@@ -43,7 +56,7 @@ jwt:
 
 itto:
   payment:
-    skip-receipt-validation: ${SKIP_RECEIPT_VALIDATION:true}
+    skip-receipt-validation: ${SKIP_RECEIPT_VALIDATION:false}
 
 nice:
   client-id: ${NICE_CLIENT_ID:}
