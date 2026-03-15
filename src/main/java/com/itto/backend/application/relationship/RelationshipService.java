@@ -491,9 +491,7 @@ public class RelationshipService {
     }
 
     private String getRepresentativePhotoUrl(Long userId) {
-        return userPhotoRepository.findByUserUserIdOrderByDisplayOrderAsc(userId).stream()
-                .filter(UserPhoto::getIsRepresentative)
-                .findFirst()
+        return userPhotoRepository.findByUserUserIdAndIsRepresentativeTrue(userId)
                 .map(UserPhoto::getPhotoUrl)
                 .orElse(null);
     }

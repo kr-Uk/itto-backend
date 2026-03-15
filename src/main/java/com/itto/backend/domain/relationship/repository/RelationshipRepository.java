@@ -39,7 +39,10 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
     Page<Relationship> findAllByUserIdAndStatus(@Param("userId") Long userId, @Param("status") RelationshipStatus status, Pageable pageable);
 
     /**
-     * Find expired relationships
+     * Find expired relationships (JOIN FETCH to prevent N+1)
      */
-    List<Relationship> findByStatusAndExpiresAtBefore(RelationshipStatus status, LocalDateTime now);
+    @Query("SELECT r FROM Relationship r JOIN FETCH r.user1 JOIN FETCH r.user2 " +
+           "WHERE r.status = :status AND r.expiresAt < :now")
+    List<Relationship> findByStatusAndExpiresAtBefore(@Param("status") RelationshipStatus status,
+                                                      @Param("now") LocalDateTime now);
 }
