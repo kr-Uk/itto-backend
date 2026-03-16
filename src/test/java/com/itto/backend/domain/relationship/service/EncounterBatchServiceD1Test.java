@@ -113,12 +113,11 @@ class EncounterBatchServiceD1Test {
         // Mock block check
         when(blockRepository.existsBlockBetween(anyLong(), anyLong())).thenReturn(false);
 
-        // Mock user lookups
-        when(userRepository.findById(1L)).thenReturn(Optional.of(userA));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(userB));
+        // Mock user lookups (batch)
+        when(userRepository.findAllById(anyList())).thenReturn(List.of(userA, userB));
 
-        // Mock user settings (no filter)
-        when(userSettingRepository.findByUserUserId(anyLong())).thenReturn(Optional.empty());
+        // Mock user settings (batch, no filter)
+        when(userSettingRepository.findByUserUserIdIn(anyList())).thenReturn(Collections.emptyList());
 
         // Mock no existing relationship
         when(relationshipRepository.findByUser1UserIdAndUser2UserId(1L, 2L)).thenReturn(Optional.empty());

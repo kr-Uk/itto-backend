@@ -93,12 +93,11 @@ class EncounterBatchServiceD3Test {
         // No blocks
         when(blockRepository.existsBlockBetween(anyLong(), anyLong())).thenReturn(false);
 
-        // Users found
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
+        // Users found (batch)
+        when(userRepository.findAllById(anyList())).thenReturn(List.of(user1, user2));
 
-        // No matching filter restriction
-        when(userSettingRepository.findByUserUserId(anyLong())).thenReturn(Optional.empty());
+        // No matching filter restriction (batch)
+        when(userSettingRepository.findByUserUserIdIn(anyList())).thenReturn(Collections.emptyList());
 
         // Locations within 50m of each other (Seoul area)
         Map<Object, Object> loc1 = Map.of("lat", "37.5665", "lng", "126.9780");
