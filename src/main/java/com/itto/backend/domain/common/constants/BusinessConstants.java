@@ -46,9 +46,14 @@ public final class BusinessConstants {
     public static final int MAX_EXCLUDED_AREAS = 3;
     public static final int MAX_EXCLUDED_CELLS = 20;
 
+    // --- Rate limit ---
+    public static final int LOGIN_MAX_ATTEMPTS = 5;
+    public static final int LOGIN_LOCKOUT_MINUTES = 15;
+
     // --- Redis key prefixes ---
     public static final String LOCATION_USER_PREFIX = "location:user:";
     public static final String LOCATION_H3_PREFIX = "location:h3:";
     public static final String ENCOUNTER_COOLDOWN_PREFIX = "encounter:cooldown:";
     public static final String REFRESH_TOKEN_PREFIX = "refresh:";
+    public static final String LOGIN_ATTEMPT_PREFIX = "login:attempt:";
 }

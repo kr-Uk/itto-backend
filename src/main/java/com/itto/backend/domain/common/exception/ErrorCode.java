@@ -36,6 +36,7 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(401, "유효하지 않은 리프레시 토큰입니다", "INVALID_REFRESH_TOKEN"),
     OAUTH_VERIFICATION_FAILED(401, "OAuth 인증에 실패했습니다", "OAUTH_VERIFICATION_FAILED"),
     UNSUPPORTED_PROVIDER(400, "지원하지 않는 소셜 로그인 제공자입니다", "UNSUPPORTED_PROVIDER"),
+    TOO_MANY_LOGIN_ATTEMPTS(429, "로그인 시도가 너무 많습니다. 15분 후 다시 시도해주세요", "TOO_MANY_LOGIN_ATTEMPTS"),
 
     // 유저
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다", "USER_NOT_FOUND"),
