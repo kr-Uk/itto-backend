@@ -28,6 +28,11 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .headers(headers -> headers
+                        .contentTypeOptions(opts -> {})
+                        .frameOptions(frame -> frame.deny())
+                        .cacheControl(cache -> {})
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/health",
@@ -36,11 +41,7 @@ public class SecurityConfig {
                                 "/api/v1/system/version",
                                 "/api/v1/hobbies",
                                 "/api/v1/nickname/validate",
-                                "/api/v1/identity/callback/**",
-                                "/actuator/prometheus",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/v3/api-docs/**"
+                                "/api/v1/identity/callback/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
