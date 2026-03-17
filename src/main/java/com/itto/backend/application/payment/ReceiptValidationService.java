@@ -1,5 +1,8 @@
 package com.itto.backend.application.payment;
 
+import com.itto.backend.application.payment.port.ReceiptValidationPort;
+import com.itto.backend.infrastructure.payment.AppleReceiptValidator;
+import com.itto.backend.infrastructure.payment.GoogleReceiptValidator;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,15 @@ public class ReceiptValidationService {
      */
     @Value("${itto.payment.skip-receipt-validation:false}")
     private boolean skipReceiptValidation;
+
+    private final AppleReceiptValidator appleReceiptValidator;
+    private final GoogleReceiptValidator googleReceiptValidator;
+
+    public ReceiptValidationService(AppleReceiptValidator appleReceiptValidator,
+                                     GoogleReceiptValidator googleReceiptValidator) {
+        this.appleReceiptValidator = appleReceiptValidator;
+        this.googleReceiptValidator = googleReceiptValidator;
+    }
 
     /**
      * 매듭 구매 영수증 검증
@@ -91,64 +103,65 @@ public class ReceiptValidationService {
     // ==================== Apple 검증 ====================
 
     private ReceiptValidationResult validateApplePurchase(String receiptToken) {
-        // TODO: Apple App Store Server API v2 호출
-        // https://developer.apple.com/documentation/appstoreserverapi
-        // 1. JWT 생성 (App Store Connect API Key 사용)
-        // 2. POST /inApps/v1/transactions/{transactionId} 또는 verifyReceipt
-        // 3. 응답에서 productId, transactionId, purchaseDate 파싱
-        // 4. 중복 구매 체크 (같은 transactionId로 이미 처리했는지)
-
         if (skipReceiptValidation) {
             log.warn("[DEV 모드] Apple 영수증 검증 스킵");
             return devModeResult("APPLE", "purchase");
         }
 
-        log.error("Apple 영수증 검증 미구현 - 프로덕션에서 거부됨");
-        return invalidResult("APPLE");
+        ReceiptValidationPort.ValidationResult portResult =
+                appleReceiptValidator.validatePurchase(receiptToken);
+
+        return toResult("APPLE", portResult);
     }
 
     private ReceiptValidationResult validateAppleSubscription(String receiptToken) {
-        // TODO: Apple App Store Server API v2 구독 검증
         if (skipReceiptValidation) {
             log.warn("[DEV 모드] Apple 구독 영수증 검증 스킵");
             return devModeResult("APPLE", "subscription");
         }
-        log.error("Apple 구독 영수증 검증 미구현 - 프로덕션에서 거부됨");
-        return invalidResult("APPLE");
+
+        ReceiptValidationPort.ValidationResult portResult =
+                appleReceiptValidator.validateSubscription(receiptToken);
+
+        return toResult("APPLE", portResult);
     }
 
     // ==================== Google 검증 ====================
 
     private ReceiptValidationResult validateGooglePurchase(String receiptToken) {
-        // TODO: Google Play Developer API 호출
-        // https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.products/get
-        // 1. Google 서비스 계정 인증 (JSON key file)
-        // 2. GET /androidpublisher/v3/applications/{packageName}/purchases/products/{productId}/tokens/{token}
-        // 3. 응답에서 purchaseState, orderId 확인
-        // 4. purchaseState == 0 (구매 완료) 확인
-        // 5. 중복 구매 체크
-
         if (skipReceiptValidation) {
             log.warn("[DEV 모드] Google 영수증 검증 스킵");
             return devModeResult("GOOGLE", "purchase");
         }
 
-        log.error("Google 영수증 검증 미구현 - 프로덕션에서 거부됨");
-        return invalidResult("GOOGLE");
+        ReceiptValidationPort.ValidationResult portResult =
+                googleReceiptValidator.validatePurchase(receiptToken);
+
+        return toResult("GOOGLE", portResult);
     }
 
     private ReceiptValidationResult validateGoogleSubscription(String receiptToken) {
-        // TODO: Google Play Developer API 구독 검증
-        // https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptions/get
         if (skipReceiptValidation) {
             log.warn("[DEV 모드] Google 구독 영수증 검증 스킵");
             return devModeResult("GOOGLE", "subscription");
         }
-        log.error("Google 구독 영수증 검증 미구현 - 프로덕션에서 거부됨");
-        return invalidResult("GOOGLE");
+
+        ReceiptValidationPort.ValidationResult portResult =
+                googleReceiptValidator.validateSubscription(receiptToken);
+
+        return toResult("GOOGLE", portResult);
     }
 
     // ==================== Helper ====================
+
+    private ReceiptValidationResult toResult(String store, ReceiptValidationPort.ValidationResult portResult) {
+        return ReceiptValidationResult.builder()
+                .isValid(portResult.valid())
+                .transactionId(portResult.transactionId())
+                .productId(portResult.productId())
+                .store(store)
+                .build();
+    }
 
     private ReceiptValidationResult invalidResult(String store) {
         return ReceiptValidationResult.builder()
