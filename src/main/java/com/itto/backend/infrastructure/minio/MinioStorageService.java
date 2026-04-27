@@ -30,15 +30,16 @@ public class MinioStorageService implements StorageService {
 
     @PostConstruct
     public void init() {
+        // S3 환경에서는 버킷을 콘솔에서 미리 생성한다.
+        // bucketExists 만 가볍게 체크해서 잘못된 설정·권한 문제를 부팅 시 로그로 노출.
         try {
             boolean exists = minioClient.bucketExists(
                     BucketExistsArgs.builder().bucket(bucket).build());
             if (!exists) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
-                log.info("MinIO 버킷 생성 완료: {}", bucket);
+                log.warn("스토리지 버킷이 존재하지 않습니다: {} (콘솔에서 생성 필요)", bucket);
             }
         } catch (Exception e) {
-            log.error("MinIO 버킷 초기화 실패: {}", e.getMessage(), e);
+            log.error("스토리지 버킷 점검 실패: {}", e.getMessage(), e);
         }
     }
 
