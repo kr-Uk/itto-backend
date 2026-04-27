@@ -18,7 +18,7 @@ public class UserSetting extends BaseEntity {
     @Column(name = "user_setting_id")
     private Long userSettingId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 

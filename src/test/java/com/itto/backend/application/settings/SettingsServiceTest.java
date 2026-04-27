@@ -12,6 +12,8 @@ import com.itto.backend.presentation.dto.settings.MatchingSettingsRequest;
 import com.itto.backend.presentation.dto.settings.MatchingSettingsResponse;
 import com.itto.backend.presentation.dto.settings.NotificationSettingsRequest;
 import com.itto.backend.presentation.dto.settings.NotificationSettingsResponse;
+import com.itto.backend.presentation.dto.settings.SettingsResponse;
+import com.itto.backend.presentation.dto.settings.SettingsUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,7 +28,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("SettingsService")
@@ -60,29 +63,47 @@ class SettingsServiceTest {
     }
 
     @Nested
+    @DisplayName("getSettings")
+    class GetSettingsTest {
+
+        @Test
+        @DisplayName("전체 설정을 조회한다")
+        void getSettingsSuccess() {
+            Long userId = 1L;
+            when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
+
+            SettingsResponse response = settingsService.getSettings(userId);
+
+            assertThat(response.getMatchingSettings().getGenderFilter()).isEqualTo("FEMALE");
+            assertThat(response.getMatchingSettings().getAgeRangeMin()).isEqualTo(25);
+            assertThat(response.getMatchingSettings().getAgeRangeMax()).isEqualTo(35);
+            assertThat(response.getNotificationSettings().isChatNotification()).isTrue();
+            assertThat(response.getNotificationSettings().isRelationshipNotification()).isTrue();
+            assertThat(response.getNotificationSettings().isStatsNotification()).isTrue();
+            assertThat(response.getNotificationSettings().isMarketingNotification()).isFalse();
+        }
+    }
+
+    @Nested
     @DisplayName("getMatchingSettings")
     class GetMatchingSettingsTest {
 
         @Test
-        @DisplayName("매칭 설정 조회 성공 - 기존 설정 존재")
+        @DisplayName("기존 설정을 조회한다")
         void getMatchingSettingsExisting() {
-            // given
             Long userId = 1L;
             when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
 
-            // when
             MatchingSettingsResponse response = settingsService.getMatchingSettings(userId);
 
-            // then
             assertThat(response.getGenderFilter()).isEqualTo("FEMALE");
             assertThat(response.getAgeRangeMin()).isEqualTo(25);
             assertThat(response.getAgeRangeMax()).isEqualTo(35);
         }
 
         @Test
-        @DisplayName("매칭 설정 조회 - 설정 없으면 새로 생성")
+        @DisplayName("설정이 없으면 기본 설정을 생성한다")
         void getMatchingSettingsCreateNew() {
-            // given
             Long userId = 1L;
             when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.empty());
             when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
@@ -90,24 +111,20 @@ class SettingsServiceTest {
             UserSetting defaultSetting = UserSetting.builder().user(testUser).build();
             when(userSettingRepository.save(any(UserSetting.class))).thenReturn(defaultSetting);
 
-            // when
             MatchingSettingsResponse response = settingsService.getMatchingSettings(userId);
 
-            // then
             verify(userSettingRepository).save(any(UserSetting.class));
-            assertThat(response.getAgeRangeMin()).isEqualTo(20); // default
-            assertThat(response.getAgeRangeMax()).isEqualTo(60); // default
+            assertThat(response.getAgeRangeMin()).isEqualTo(20);
+            assertThat(response.getAgeRangeMax()).isEqualTo(60);
         }
 
         @Test
-        @DisplayName("설정 생성 시 유저 없음 → BusinessException")
+        @DisplayName("사용자가 없으면 예외를 던진다")
         void getMatchingSettingsUserNotFound() {
-            // given
             Long userId = 999L;
             when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.empty());
             when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-            // when & then
             assertThatThrownBy(() -> settingsService.getMatchingSettings(userId))
                     .isInstanceOf(BusinessException.class)
                     .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
@@ -120,37 +137,59 @@ class SettingsServiceTest {
     class UpdateMatchingSettingsTest {
 
         @Test
-        @DisplayName("매칭 설정 업데이트 성공")
+        @DisplayName("매칭 설정을 수정한다")
         void updateMatchingSettingsSuccess() {
-            // given
             Long userId = 1L;
             when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
 
             MatchingSettingsRequest request = createMatchingSettingsRequest("MALE", 20, 40);
 
-            // when
             settingsService.updateMatchingSettings(userId, request);
 
-            // then
             assertThat(testSetting.getGenderFilter()).isEqualTo(Gender.MALE);
             assertThat(testSetting.getAgeRangeMin()).isEqualTo(20);
             assertThat(testSetting.getAgeRangeMax()).isEqualTo(40);
         }
 
         @Test
-        @DisplayName("성별 필터 null로 설정")
+        @DisplayName("genderFilter를 null로 설정할 수 있다")
         void updateMatchingSettingsNullGender() {
-            // given
             Long userId = 1L;
             when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
 
             MatchingSettingsRequest request = createMatchingSettingsRequest(null, 19, 50);
 
-            // when
             settingsService.updateMatchingSettings(userId, request);
 
-            // then
             assertThat(testSetting.getGenderFilter()).isNull();
+        }
+
+        @Test
+        @DisplayName("잘못된 genderFilter면 예외를 던진다")
+        void updateMatchingSettingsInvalidGender() {
+            Long userId = 1L;
+            when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
+
+            MatchingSettingsRequest request = createMatchingSettingsRequest("UNKNOWN", 20, 40);
+
+            assertThatThrownBy(() -> settingsService.updateMatchingSettings(userId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                            .isEqualTo(ErrorCode.BAD_REQUEST));
+        }
+
+        @Test
+        @DisplayName("최소 나이가 최대 나이보다 크면 예외를 던진다")
+        void updateMatchingSettingsInvalidAgeRange() {
+            Long userId = 1L;
+            when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
+
+            MatchingSettingsRequest request = createMatchingSettingsRequest("MALE", 40, 20);
+
+            assertThatThrownBy(() -> settingsService.updateMatchingSettings(userId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
+                            .isEqualTo(ErrorCode.BAD_REQUEST));
         }
     }
 
@@ -159,16 +198,13 @@ class SettingsServiceTest {
     class GetNotificationSettingsTest {
 
         @Test
-        @DisplayName("알림 설정 조회 성공")
+        @DisplayName("알림 설정을 조회한다")
         void getNotificationSettingsSuccess() {
-            // given
             Long userId = 1L;
             when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
 
-            // when
             NotificationSettingsResponse response = settingsService.getNotificationSettings(userId);
 
-            // then
             assertThat(response.isChatNotification()).isTrue();
             assertThat(response.isRelationshipNotification()).isTrue();
             assertThat(response.isStatsNotification()).isTrue();
@@ -177,22 +213,24 @@ class SettingsServiceTest {
     }
 
     @Nested
-    @DisplayName("updateNotificationSettings")
-    class UpdateNotificationSettingsTest {
+    @DisplayName("updateSettings")
+    class UpdateSettingsTest {
 
         @Test
-        @DisplayName("알림 설정 업데이트 성공")
-        void updateNotificationSettingsSuccess() {
-            // given
+        @DisplayName("전체 설정을 수정한다")
+        void updateSettingsSuccess() {
             Long userId = 1L;
             when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
 
-            NotificationSettingsRequest request = createNotificationSettingsRequest(false, true, false, true);
+            SettingsUpdateRequest request = new SettingsUpdateRequest();
+            setField(request, "matchingSettings", createMatchingSettingsRequest("MALE", 20, 40));
+            setField(request, "notificationSettings", createNotificationSettingsRequest(false, true, false, true));
 
-            // when
-            settingsService.updateNotificationSettings(userId, request);
+            settingsService.updateSettings(userId, request);
 
-            // then
+            assertThat(testSetting.getGenderFilter()).isEqualTo(Gender.MALE);
+            assertThat(testSetting.getAgeRangeMin()).isEqualTo(20);
+            assertThat(testSetting.getAgeRangeMax()).isEqualTo(40);
             assertThat(testSetting.getChatNotification()).isFalse();
             assertThat(testSetting.getRelationshipNotification()).isTrue();
             assertThat(testSetting.getStatsNotification()).isFalse();
@@ -200,7 +238,26 @@ class SettingsServiceTest {
         }
     }
 
-    // --- Helper methods ---
+    @Nested
+    @DisplayName("updateNotificationSettings")
+    class UpdateNotificationSettingsTest {
+
+        @Test
+        @DisplayName("알림 설정을 수정한다")
+        void updateNotificationSettingsSuccess() {
+            Long userId = 1L;
+            when(userSettingRepository.findByUserUserId(userId)).thenReturn(Optional.of(testSetting));
+
+            NotificationSettingsRequest request = createNotificationSettingsRequest(false, true, false, true);
+
+            settingsService.updateNotificationSettings(userId, request);
+
+            assertThat(testSetting.getChatNotification()).isFalse();
+            assertThat(testSetting.getRelationshipNotification()).isTrue();
+            assertThat(testSetting.getStatsNotification()).isFalse();
+            assertThat(testSetting.getMarketingNotification()).isTrue();
+        }
+    }
 
     private MatchingSettingsRequest createMatchingSettingsRequest(String genderFilter, int ageMin, int ageMax) {
         MatchingSettingsRequest request = new MatchingSettingsRequest();
