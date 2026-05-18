@@ -69,15 +69,6 @@ itto:
       service-account-key-path: ${GOOGLE_SERVICE_ACCOUNT_KEY_PATH:}
       package-name: ${GOOGLE_PACKAGE_NAME:}
 
-nice:
-  client-id: ${NICE_CLIENT_ID:}
-  client-secret: ${NICE_CLIENT_SECRET:}
-  product-id: ${NICE_PRODUCT_ID:}
-  access-token-url: ${NICE_ACCESS_TOKEN_URL:https://svc.niceapi.co.kr:22001/digital/niceid/oauth/oauth/token}
-  crypto-token-url: ${NICE_CRYPTO_TOKEN_URL:https://svc.niceapi.co.kr:22001/digital/niceid/api/v1.0/common/crypto/token}
-  return-url: ${NICE_RETURN_URL:https://api.hguitto.site/api/v1/identity/callback/success}
-  error-url: ${NICE_ERROR_URL:https://api.hguitto.site/api/v1/identity/callback/fail}
-
 server:
   port: 80
 
