@@ -1,6 +1,8 @@
 package com.itto.backend.application.relationship;
 
+import com.itto.backend.application.chat.ChatService;
 import com.itto.backend.application.location.LocationService;
+import com.itto.backend.domain.chat.entity.ChatRoom;
 import com.itto.backend.domain.payment.entity.MonthlyUsage;
 import com.itto.backend.domain.payment.repository.MonthlyUsageRepository;
 import com.itto.backend.presentation.dto.relationship.*;
@@ -32,7 +34,6 @@ import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +55,7 @@ public class RelationshipService {
     private final UserRepository userRepository;
     private final UserPhotoRepository userPhotoRepository;
     private final UserHobbyRepository userHobbyRepository;
+    private final ChatService chatService;
     private final H3Core h3;
 
     private static final int HEATMAP_RING_K = 4;
@@ -312,8 +314,9 @@ public class RelationshipService {
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(7);
         rel.updateStatusWithExpiry(RelationshipStatus.INYEON, expiresAt);
 
-        // 채팅방 ID 생성
-        String chatRoomId = UUID.randomUUID().toString();
+        // 채팅방 생성 (Spring/PostgreSQL) — Long PK의 문자열 표현을 relationships.chat_room_id에 저장
+        ChatRoom chatRoom = chatService.createForRelationship(rel, expiresAt);
+        String chatRoomId = String.valueOf(chatRoom.getId());
         rel.setChatRoomId(chatRoomId);
 
         User user = userRepository.findById(userId)

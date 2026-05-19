@@ -45,7 +45,8 @@ public class SecurityConfig {
                                 "/api/v1/auth/refresh",
                                 "/api/v1/system/version",
                                 "/api/v1/hobbies",
-                                "/api/v1/nickname/validate"
+                                "/api/v1/nickname/validate",
+                                "/ws/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

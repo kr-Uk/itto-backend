@@ -27,9 +27,6 @@ public class ChatRoom extends BaseEntity {
     @Column(name = "chat_room_id")
     private Long id;
 
-    @Column(name = "firestore_room_id", nullable = false, unique = true, length = 100)
-    private String firestoreRoomId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "relationship_id", nullable = false)
     private Relationship relationship;
@@ -47,4 +44,23 @@ public class ChatRoom extends BaseEntity {
 
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
+
+    @Column(name = "last_message", columnDefinition = "TEXT")
+    private String lastMessage;
+
+    @Column(name = "last_message_at")
+    private LocalDateTime lastMessageAt;
+
+    public void updateLastMessage(String preview, LocalDateTime at) {
+        this.lastMessage = preview;
+        this.lastMessageAt = at;
+    }
+
+    public boolean isParticipant(Long userId) {
+        return user1.getUserId().equals(userId) || user2.getUserId().equals(userId);
+    }
+
+    public User getOtherUser(Long myUserId) {
+        return user1.getUserId().equals(myUserId) ? user2 : user1;
+    }
 }

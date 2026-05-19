@@ -97,7 +97,13 @@ public enum ErrorCode {
     IDENTITY_NOT_FOUND(404, "본인인증 요청을 찾을 수 없습니다", "IDENTITY_NOT_FOUND"),
     IDENTITY_DUPLICATE_CI(409, "이미 가입된 본인인증 정보입니다", "IDENTITY_DUPLICATE_CI"),
     IDENTITY_VERIFICATION_FAILED(400, "본인인증에 실패했습니다", "IDENTITY_VERIFICATION_FAILED"),
-    IDENTITY_CRYPTO_ERROR(500, "본인인증 암호화 처리 중 오류가 발생했습니다", "IDENTITY_CRYPTO_ERROR");
+    IDENTITY_CRYPTO_ERROR(500, "본인인증 암호화 처리 중 오류가 발생했습니다", "IDENTITY_CRYPTO_ERROR"),
+
+    // 채팅
+    CHAT_ROOM_NOT_FOUND(404, "채팅방을 찾을 수 없습니다", "CHAT_ROOM_NOT_FOUND"),
+    NOT_CHAT_PARTICIPANT(403, "해당 채팅방의 참여자가 아닙니다", "NOT_CHAT_PARTICIPANT"),
+    CHAT_ROOM_INACTIVE(400, "비활성화된 채팅방입니다", "CHAT_ROOM_INACTIVE"),
+    EMPTY_MESSAGE(400, "메시지 내용 또는 이미지가 필요합니다", "EMPTY_MESSAGE");
 
     private final int status;    // HTTP 상태 코드 (예: 400, 401, 404, 500)
     private final String message; // 사용자에게 보여줄 에러 메시지
