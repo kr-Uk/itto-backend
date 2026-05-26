@@ -253,7 +253,6 @@ class ProfileServiceTest {
             // given
             Long userId = 1L;
             Long photoId = 10L;
-            when(userPhotoRepository.countByUserUserId(userId)).thenReturn(2L);
 
             UserPhoto photo = UserPhoto.builder()
                     .user(testUser)
@@ -271,27 +270,11 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("최소 1장 유지 위반 → BusinessException")
-        void deletePhotoMinRequired() {
-            // given
-            Long userId = 1L;
-            Long photoId = 10L;
-            when(userPhotoRepository.countByUserUserId(userId)).thenReturn(1L);
-
-            // when & then
-            assertThatThrownBy(() -> profileService.deletePhoto(userId, photoId))
-                    .isInstanceOf(BusinessException.class)
-                    .satisfies(ex -> assertThat(((BusinessException) ex).getErrorCode())
-                            .isEqualTo(ErrorCode.MIN_PHOTO_REQUIRED));
-        }
-
-        @Test
         @DisplayName("존재하지 않는 사진 삭제 → BusinessException")
         void deletePhotoNotFound() {
             // given
             Long userId = 1L;
             Long photoId = 999L;
-            when(userPhotoRepository.countByUserUserId(userId)).thenReturn(2L);
             when(userPhotoRepository.findById(photoId)).thenReturn(Optional.empty());
 
             // when & then
