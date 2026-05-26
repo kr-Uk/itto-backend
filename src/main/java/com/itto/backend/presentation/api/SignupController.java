@@ -42,7 +42,7 @@ public class SignupController {
         return ResponseEntity.ok(ApiResponse.success("프로필이 저장되었습니다"));
     }
 
-    @Operation(summary = "프로필 사진 업로드", description = "프로필 사진을 최대 3장 업로드합니다")
+    @Operation(summary = "프로필 사진 업로드", description = "프로필 사진을 1장 업로드합니다")
     @PostMapping("/photos")
     public ResponseEntity<ApiResponse<List<PhotoResponse>>> uploadPhotos(
             Authentication authentication,

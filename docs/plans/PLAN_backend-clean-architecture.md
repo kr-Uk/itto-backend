@@ -327,7 +327,7 @@ public final class BusinessConstants {
     public static final int RESTORE_KNOTS_COST = 30;
 
     // Signup
-    public static final int MAX_PHOTOS = 3;
+    public static final int MAX_PHOTOS = 1;
     public static final int MIN_AGE = 19;
 
     // Contact hash

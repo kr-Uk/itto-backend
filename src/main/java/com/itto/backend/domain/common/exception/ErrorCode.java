@@ -52,7 +52,7 @@ public enum ErrorCode {
     HOBBY_MAX(400, "취미는 최대 3개까지 선택할 수 있습니다", "HOBBY_MAX"),
     HOBBY_NOT_FOUND(404, "존재하지 않는 취미입니다", "HOBBY_NOT_FOUND"),
     PHOTO_MIN(400, "사진은 최소 1장 필요합니다", "PHOTO_MIN"),
-    PHOTO_MAX(400, "사진은 최대 3장까지 업로드할 수 있습니다", "PHOTO_MAX"),
+    PHOTO_MAX(400, "사진은 최대 1장까지 업로드할 수 있습니다", "PHOTO_MAX"),
     PROFILE_INCOMPLETE(400, "프로필 정보를 먼저 입력해주세요", "PROFILE_INCOMPLETE"),
     TERMS_NOT_AGREED(400, "필수 약관에 동의해주세요", "TERMS_NOT_AGREED"),
     FILE_UPLOAD_FAILED(500, "파일 업로드에 실패했습니다", "FILE_UPLOAD_FAILED"),
