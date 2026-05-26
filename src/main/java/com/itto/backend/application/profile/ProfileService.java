@@ -161,10 +161,7 @@ public class ProfileService {
             }
         }
 
-        // 4. 총 사진 수 검증
-        if (result.isEmpty()) {
-            throw new BusinessException(ErrorCode.MIN_PHOTO_REQUIRED);
-        }
+        // 4. 사진 수 상한 검증 (0장 허용 — 기본 프로필 옵션)
         if (result.size() > BusinessConstants.MAX_PHOTOS) {
             throw new BusinessException(ErrorCode.PHOTO_MAX);
         }
@@ -174,12 +171,6 @@ public class ProfileService {
 
     @Transactional
     public void deletePhoto(Long userId, Long photoId) {
-        // 최소 1장 체크
-        long count = userPhotoRepository.countByUserUserId(userId);
-        if (count <= 1) {
-            throw new BusinessException(ErrorCode.MIN_PHOTO_REQUIRED);
-        }
-
         UserPhoto photo = userPhotoRepository.findById(photoId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PHOTO_NOT_FOUND));
 
