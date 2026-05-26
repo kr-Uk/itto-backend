@@ -141,7 +141,7 @@ public class AuthService {
         // FCM 토큰 삭제
         fcmTokenRepository.deleteByUserUserId(userId);
 
-        log.info("회원탈퇴 처리 완료: userId={}, reason={}", userId, request.getReason());
+        log.info("회원탈퇴 처리 완료: userId={}", userId);
     }
 
     private void saveRefreshToken(Long userId, String refreshToken) {

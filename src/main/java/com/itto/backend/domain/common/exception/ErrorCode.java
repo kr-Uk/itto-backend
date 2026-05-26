@@ -52,7 +52,7 @@ public enum ErrorCode {
     HOBBY_MAX(400, "취미는 최대 3개까지 선택할 수 있습니다", "HOBBY_MAX"),
     HOBBY_NOT_FOUND(404, "존재하지 않는 취미입니다", "HOBBY_NOT_FOUND"),
     PHOTO_MIN(400, "사진은 최소 1장 필요합니다", "PHOTO_MIN"),
-    PHOTO_MAX(400, "사진은 최대 3장까지 업로드할 수 있습니다", "PHOTO_MAX"),
+    PHOTO_MAX(400, "사진은 최대 1장까지 업로드할 수 있습니다", "PHOTO_MAX"),
     PROFILE_INCOMPLETE(400, "프로필 정보를 먼저 입력해주세요", "PROFILE_INCOMPLETE"),
     TERMS_NOT_AGREED(400, "필수 약관에 동의해주세요", "TERMS_NOT_AGREED"),
     FILE_UPLOAD_FAILED(500, "파일 업로드에 실패했습니다", "FILE_UPLOAD_FAILED"),
@@ -97,7 +97,13 @@ public enum ErrorCode {
     IDENTITY_NOT_FOUND(404, "본인인증 요청을 찾을 수 없습니다", "IDENTITY_NOT_FOUND"),
     IDENTITY_DUPLICATE_CI(409, "이미 가입된 본인인증 정보입니다", "IDENTITY_DUPLICATE_CI"),
     IDENTITY_VERIFICATION_FAILED(400, "본인인증에 실패했습니다", "IDENTITY_VERIFICATION_FAILED"),
-    IDENTITY_CRYPTO_ERROR(500, "본인인증 암호화 처리 중 오류가 발생했습니다", "IDENTITY_CRYPTO_ERROR");
+    IDENTITY_CRYPTO_ERROR(500, "본인인증 암호화 처리 중 오류가 발생했습니다", "IDENTITY_CRYPTO_ERROR"),
+
+    // 채팅
+    CHAT_ROOM_NOT_FOUND(404, "채팅방을 찾을 수 없습니다", "CHAT_ROOM_NOT_FOUND"),
+    NOT_CHAT_PARTICIPANT(403, "해당 채팅방의 참여자가 아닙니다", "NOT_CHAT_PARTICIPANT"),
+    CHAT_ROOM_INACTIVE(400, "비활성화된 채팅방입니다", "CHAT_ROOM_INACTIVE"),
+    EMPTY_MESSAGE(400, "메시지 내용 또는 이미지가 필요합니다", "EMPTY_MESSAGE");
 
     private final int status;    // HTTP 상태 코드 (예: 400, 401, 404, 500)
     private final String message; // 사용자에게 보여줄 에러 메시지

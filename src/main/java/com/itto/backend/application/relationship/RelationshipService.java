@@ -1,5 +1,8 @@
 package com.itto.backend.application.relationship;
 
+import com.itto.backend.application.chat.ChatService;
+import com.itto.backend.application.location.LocationService;
+import com.itto.backend.domain.chat.entity.ChatRoom;
 import com.itto.backend.domain.payment.entity.MonthlyUsage;
 import com.itto.backend.domain.payment.repository.MonthlyUsageRepository;
 import com.itto.backend.presentation.dto.relationship.*;
@@ -15,6 +18,8 @@ import com.itto.backend.domain.common.enums.*;
 import com.itto.backend.domain.common.constants.BusinessConstants;
 import com.itto.backend.domain.common.exception.BusinessException;
 import com.itto.backend.domain.common.exception.ErrorCode;
+import com.uber.h3core.H3Core;
+import com.uber.h3core.util.LatLng;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,8 +31,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +55,10 @@ public class RelationshipService {
     private final UserRepository userRepository;
     private final UserPhotoRepository userPhotoRepository;
     private final UserHobbyRepository userHobbyRepository;
+    private final ChatService chatService;
+    private final H3Core h3;
+
+    private static final int HEATMAP_RING_K = 4;
 
     // --- 5-1. 관계 목록 조회 (페이지네이션) ---
     public RelationshipListResponse getRelationships(Long userId, String status, int page, int size) {
@@ -63,6 +73,14 @@ public class RelationshipService {
                     boolean isMosaic = r.getStatus() == RelationshipStatus.UYEON;
                     String representativePhoto = getRepresentativePhotoUrl(other.getUserId());
 
+                    List<RelationshipListResponse.HobbySummary> hobbies = userHobbyRepository
+                            .findByUserUserId(other.getUserId()).stream()
+                            .map(uh -> RelationshipListResponse.HobbySummary.builder()
+                                    .id(uh.getHobby().getHobbyId())
+                                    .name(uh.getHobby().getName())
+                                    .build())
+                            .toList();
+
                     return RelationshipListResponse.RelationshipSummary.builder()
                             .relationshipId(r.getId())
                             .otherUser(RelationshipListResponse.OtherUserSummary.builder()
@@ -70,6 +88,7 @@ public class RelationshipService {
                                     .nickname(other.getNickname())
                                     .representativePhoto(representativePhoto)
                                     .isMosaic(isMosaic)
+                                    .introduction(other.getIntroduction())
                                     .build())
                             .status(r.getStatus().name())
                             .encounterCount(r.getEncounterCount())
@@ -78,6 +97,7 @@ public class RelationshipService {
                             .createdAt(r.getCreatedAt())
                             .chatRoomId(r.getChatRoomId())
                             .destinyBadge(r.isDestinyBadge())
+                            .hobbies(hobbies)
                             .build();
                 }).toList();
 
@@ -151,6 +171,42 @@ public class RelationshipService {
                 .createdAt(rel.getCreatedAt())
                 .chatRoomId(rel.getChatRoomId())
                 .destinyBadge(rel.isDestinyBadge())
+                .build();
+    }
+
+    // --- 5-2b. 만남 H3 헥사곤 heatmap 조회 ---
+    public EncounterHeatmapResponse getEncounterHeatmap(Long userId, double lat, double lng) {
+        // 사용자 위치 주변 k-ring 셀 후보군 (정확한 위치 노출 없이 동네 단위 시각화)
+        String centerH3 = h3.latLngToCellAddress(lat, lng, LocationService.H3_RESOLUTION);
+        List<String> diskIndexes = List.copyOf(h3.gridDisk(centerH3, HEATMAP_RING_K));
+
+        // 사용자의 모든 encounter h3Index별 카운트
+        Map<String, Long> countByH3 = new HashMap<>();
+        for (EncounterRepository.H3CountRow row : encounterRepository.countByH3IndexForUser(userId)) {
+            countByH3.put(row.getH3Index(), row.getCnt());
+        }
+
+        List<EncounterHeatmapResponse.HeatmapCell> cells = diskIndexes.stream()
+                .map(idx -> {
+                    LatLng cellCenter = h3.cellToLatLng(idx);
+                    List<List<Double>> boundary = h3.cellToBoundary(idx).stream()
+                            .map(p -> List.of(p.lat, p.lng))
+                            .toList();
+                    long count = countByH3.getOrDefault(idx, 0L);
+                    return EncounterHeatmapResponse.HeatmapCell.builder()
+                            .h3Index(idx)
+                            .boundary(boundary)
+                            .centerLat(cellCenter.lat)
+                            .centerLng(cellCenter.lng)
+                            .count((int) count)
+                            .build();
+                })
+                .toList();
+
+        return EncounterHeatmapResponse.builder()
+                .cells(cells)
+                .centerLat(lat)
+                .centerLng(lng)
                 .build();
     }
 
@@ -258,8 +314,9 @@ public class RelationshipService {
         LocalDateTime expiresAt = LocalDateTime.now().plusDays(7);
         rel.updateStatusWithExpiry(RelationshipStatus.INYEON, expiresAt);
 
-        // 채팅방 ID 생성
-        String chatRoomId = UUID.randomUUID().toString();
+        // 채팅방 생성 (Spring/PostgreSQL) — Long PK의 문자열 표현을 relationships.chat_room_id에 저장
+        ChatRoom chatRoom = chatService.createForRelationship(rel, expiresAt);
+        String chatRoomId = String.valueOf(chatRoom.getId());
         rel.setChatRoomId(chatRoomId);
 
         User user = userRepository.findById(userId)

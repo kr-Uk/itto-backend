@@ -52,13 +52,24 @@ spring.servlet.multipart:
   max-request-size: 30MB
 
 jwt:
-  secret: ${JWT_SECRET:itto-dev-secret-key-must-be-at-least-256-bits-long-for-hs256}
+  secret: ${JWT_SECRET}
   access-token-expiry: ${JWT_ACCESS_EXPIRY:1800000}
   refresh-token-expiry: ${JWT_REFRESH_EXPIRY:2592000000}
 
 itto:
   payment:
     skip-receipt-validation: ${SKIP_RECEIPT_VALIDATION:false}
+  store-api:
+    apple:
+      base-url: ${APPLE_STORE_API_BASE_URL:https://api.storekit.itunes.apple.com}
+      issuer-id: ${APPLE_STORE_API_ISSUER_ID:}
+      key-id: ${APPLE_STORE_API_KEY_ID:}
+      private-key-path: ${APPLE_STORE_API_PRIVATE_KEY_PATH:}
+      bundle-id: ${APPLE_BUNDLE_ID:}
+    google:
+      base-url: ${GOOGLE_PLAY_API_BASE_URL:https://androidpublisher.googleapis.com}
+      service-account-key-path: ${GOOGLE_SERVICE_ACCOUNT_KEY_PATH:}
+      package-name: ${GOOGLE_PACKAGE_NAME:}
 
 nice:
   client-id: ${NICE_CLIENT_ID:}

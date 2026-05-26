@@ -245,7 +245,7 @@ public class ShopService {
                 .storeSubscriptionId(validationResult.getTransactionId()) // 검증된 transactionId 사용
                 .plan(SubscriptionPlan.MONTHLY)
                 .price(BusinessConstants.SUBSCRIPTION_LAUNCH_PRICE)
-                .isPromotion(true) // TODO: 실제 프로모션 여부
+                .isPromotion(false) // 프로모션 시스템 미구현 — 기본값 false
                 .startedAt(now)
                 .expiresAt(expiresAt)
                 .isActive(true)

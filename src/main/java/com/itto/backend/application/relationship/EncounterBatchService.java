@@ -18,7 +18,6 @@ import com.itto.backend.domain.common.enums.RelationshipStatus;
 import com.itto.backend.domain.common.enums.RelationshipTrigger;
 import com.itto.backend.domain.common.constants.BusinessConstants;
 import com.itto.backend.domain.common.enums.VerificationStatus;
-import com.uber.h3core.H3Core;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
@@ -26,7 +25,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -51,7 +49,6 @@ public class EncounterBatchService {
     private final BlockRepository blockRepository;
     private final ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository;
     private final NotificationService notificationService;
-    private final H3Core h3;
 
     public EncounterBatchService(StringRedisTemplate redisTemplate,
                                  UserRepository userRepository,
@@ -71,11 +68,6 @@ public class EncounterBatchService {
         this.blockRepository = blockRepository;
         this.excludedAreaH3IndexRepository = excludedAreaH3IndexRepository;
         this.notificationService = notificationService;
-        try {
-            this.h3 = H3Core.newInstance();
-        } catch (IOException e) {
-            throw new IllegalStateException("H3 라이브러리 초기화 실패", e);
-        }
     }
 
     /**

@@ -31,6 +31,7 @@ public class RelationshipListResponse {
         private LocalDateTime createdAt;
         private String chatRoomId;
         private boolean destinyBadge;
+        private List<HobbySummary> hobbies;
     }
 
     @Getter
@@ -41,5 +42,14 @@ public class RelationshipListResponse {
         private String nickname;
         private String representativePhoto;
         private boolean isMosaic;
+        private String introduction;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    public static class HobbySummary {
+        private Long id;
+        private String name;
     }
 }

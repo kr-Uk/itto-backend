@@ -20,8 +20,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByNicknameAndUserIdNot(String nickname, Long userId);
 
     Page<User> findByVerificationStatus(VerificationStatus status, Pageable pageable);
-
-    boolean existsByCiAndDeletedAtIsNull(String ci);
-
-    boolean existsByDiAndDeletedAtIsNull(String di);
 }

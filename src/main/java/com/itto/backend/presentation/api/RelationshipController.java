@@ -130,6 +130,18 @@ public class RelationshipController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "만남 H3 헥사곤 heatmap",
+            description = "사용자 위치 주변 H3 셀별로 본인이 마주친 횟수를 집계 (정확한 위치 노출 없이 동네 단위 시각화)")
+    @GetMapping("/encounter-heatmap")
+    public ResponseEntity<ApiResponse<EncounterHeatmapResponse>> getEncounterHeatmap(
+            Authentication authentication,
+            @RequestParam("lat") double lat,
+            @RequestParam("lng") double lng) {
+        Long userId = (Long) authentication.getPrincipal();
+        EncounterHeatmapResponse response = relationshipService.getEncounterHeatmap(userId, lat, lng);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @Operation(summary = "우연→필연 전환", description = "우연 관계를 매듭을 사용하여 필연으로 전환합니다")
     @PostMapping("/{relationshipId}/convert")
     public ResponseEntity<ApiResponse<ConvertResponse>> convertToPilyeon(

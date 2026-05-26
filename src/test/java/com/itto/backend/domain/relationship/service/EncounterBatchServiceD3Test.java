@@ -11,7 +11,6 @@ import com.itto.backend.domain.relationship.repository.EncounterRepository;
 import com.itto.backend.domain.relationship.repository.RelationshipLogRepository;
 import com.itto.backend.domain.relationship.repository.RelationshipRepository;
 import com.itto.backend.domain.user.entity.User;
-import com.itto.backend.domain.user.entity.UserSetting;
 import com.itto.backend.domain.user.repository.UserRepository;
 import com.itto.backend.domain.user.repository.UserSettingRepository;
 import com.itto.backend.domain.common.enums.*;

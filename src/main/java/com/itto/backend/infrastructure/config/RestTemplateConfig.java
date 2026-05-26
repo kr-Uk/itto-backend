@@ -1,4 +1,4 @@
-package com.itto.backend.infrastructure.nice;
+package com.itto.backend.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

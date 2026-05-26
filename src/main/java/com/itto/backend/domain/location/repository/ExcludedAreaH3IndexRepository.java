@@ -23,4 +23,10 @@ public interface ExcludedAreaH3IndexRepository extends JpaRepository<ExcludedAre
      */
     @Query("SELECT DISTINCT e.excludedArea.user.userId FROM ExcludedAreaH3Index e WHERE e.h3Index = :h3Index")
     Set<Long> findUserIdsByH3Index(@Param("h3Index") String h3Index);
+
+    /**
+     * 여러 ExcludedArea ID에 해당하는 H3 인덱스를 한번에 조회 (N+1 방지)
+     */
+    @Query("SELECT e FROM ExcludedAreaH3Index e WHERE e.excludedArea.id IN :excludedAreaIds")
+    List<ExcludedAreaH3Index> findByExcludedAreaIdIn(@Param("excludedAreaIds") List<Long> excludedAreaIds);
 }

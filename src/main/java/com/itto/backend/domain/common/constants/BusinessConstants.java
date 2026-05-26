@@ -36,7 +36,7 @@ public final class BusinessConstants {
     public static final int SILTARAE_FIRST_KNOTS = 1600;
 
     // --- Signup ---
-    public static final int MAX_PHOTOS = 3;
+    public static final int MAX_PHOTOS = 1;
     public static final int MIN_AGE = 19;
 
     // --- Contact hash ---

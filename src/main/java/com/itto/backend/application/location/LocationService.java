@@ -18,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.uber.h3core.util.LatLng;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,17 +43,13 @@ public class LocationService {
     public LocationService(UserRepository userRepository,
                           ExcludedAreaRepository excludedAreaRepository,
                           ExcludedAreaH3IndexRepository excludedAreaH3IndexRepository,
-                          StringRedisTemplate redisTemplate) {
+                          StringRedisTemplate redisTemplate,
+                          H3Core h3) {
         this.userRepository = userRepository;
         this.excludedAreaRepository = excludedAreaRepository;
         this.excludedAreaH3IndexRepository = excludedAreaH3IndexRepository;
         this.redisTemplate = redisTemplate;
-        try {
-            this.h3 = H3Core.newInstance();
-        } catch (IOException e) {
-            log.error("Failed to initialize H3Core", e);
-            throw new IllegalStateException("H3 라이브러리 초기화 실패", e);
-        }
+        this.h3 = h3;
     }
 
     /**
@@ -71,8 +67,10 @@ public class LocationService {
         );
 
         log.info("User {} sent location: clientH3Index={}, serverH3Index={}, lat={}, lng={}, accuracy={}, timestamp={}",
-                userId, request.getH3Index(), serverH3Index, request.getLatitude(),
-                request.getLongitude(), request.getAccuracy(), request.getTimestamp());
+                userId, request.getH3Index(), serverH3Index,
+                String.format("%.2f**", request.getLatitude()),
+                String.format("%.2f**", request.getLongitude()),
+                request.getAccuracy(), request.getTimestamp());
 
         // Redis에 위치 데이터 저장 (배치 스침 판정에서 활용)
         saveLocationToRedis(userId, serverH3Index, request.getLatitude(), request.getLongitude());
@@ -144,12 +142,21 @@ public class LocationService {
 
         List<ExcludedArea> excludedAreas = excludedAreaRepository.findByUserUserId(userId);
 
+        // N+1 방지: 모든 ExcludedArea의 H3Index를 한번에 조회
+        List<Long> areaIds = excludedAreas.stream()
+                .map(ExcludedArea::getId)
+                .collect(Collectors.toList());
+
+        Map<Long, List<String>> h3IndexMap = areaIds.isEmpty()
+                ? Map.of()
+                : excludedAreaH3IndexRepository.findByExcludedAreaIdIn(areaIds).stream()
+                        .collect(Collectors.groupingBy(
+                                h3 -> h3.getExcludedArea().getId(),
+                                Collectors.mapping(ExcludedAreaH3Index::getH3Index, Collectors.toList())));
+
         List<ExcludedAreaListResponse.ExcludedAreaInfo> excludedAreaInfos = excludedAreas.stream()
                 .map(area -> {
-                    List<String> h3Indexes = excludedAreaH3IndexRepository.findByExcludedAreaId(area.getId())
-                            .stream()
-                            .map(ExcludedAreaH3Index::getH3Index)
-                            .collect(Collectors.toList());
+                    List<String> h3Indexes = h3IndexMap.getOrDefault(area.getId(), List.of());
                     return ExcludedAreaListResponse.ExcludedAreaInfo.from(area, h3Indexes);
                 })
                 .collect(Collectors.toList());
@@ -196,8 +203,10 @@ public class LocationService {
         excludedAreaH3IndexRepository.saveAll(h3IndexEntities);
 
         log.info("User {} created excluded area: id={}, name={}, lat={}, lng={}, radius={}, h3IndexCount={}",
-                userId, excludedArea.getId(), request.getName(), request.getLatitude(),
-                request.getLongitude(), request.getRadius(), h3Indexes.size());
+                userId, excludedArea.getId(), request.getName(),
+                String.format("%.2f**", request.getLatitude()),
+                String.format("%.2f**", request.getLongitude()),
+                request.getRadius(), h3Indexes.size());
 
         return ExcludedAreaCreateResponse.from(excludedArea, h3Indexes);
     }
@@ -282,13 +291,17 @@ public class LocationService {
                 })
                 .collect(Collectors.toList());
 
-        // 사용자의 기존 제외 셀 목록 조회
+        // 사용자의 기존 제외 셀 목록 조회 (N+1 방지: IN 절로 한번에 조회)
         List<ExcludedArea> excludedAreas = excludedAreaRepository.findByUserUserId(userId);
-        List<String> selectedIndexes = excludedAreas.stream()
-                .flatMap(area -> excludedAreaH3IndexRepository.findByExcludedAreaId(area.getId()).stream())
-                .map(ExcludedAreaH3Index::getH3Index)
-                .distinct()
+        List<Long> excludedAreaIds = excludedAreas.stream()
+                .map(ExcludedArea::getId)
                 .collect(Collectors.toList());
+        List<String> selectedIndexes = excludedAreaIds.isEmpty()
+                ? List.of()
+                : excludedAreaH3IndexRepository.findByExcludedAreaIdIn(excludedAreaIds).stream()
+                        .map(ExcludedAreaH3Index::getH3Index)
+                        .distinct()
+                        .collect(Collectors.toList());
 
         return H3GridResponse.builder()
                 .cells(cells)
